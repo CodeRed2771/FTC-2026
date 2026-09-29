@@ -19,12 +19,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
@@ -44,7 +38,7 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
     protected Intake_5384_2025 intake;
     protected Shooter_5384_2025 shooter;
     protected Storage_5384_2025 storage;
-    protected RobotCamera camera;
+    protected DecodeGameCamera camera;
     
     protected ElapsedTime runtime = new ElapsedTime();
     double timerSetPoint = 999;
@@ -68,7 +62,7 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
         intake = new Intake_5384_2025(hardwareMap, telemetry);
         shooter = new Shooter_5384_2025(hardwareMap, telemetry);
         storage = new Storage_5384_2025(hardwareMap, telemetry);
-        camera = new RobotCamera(hardwareMap, telemetry);
+        camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
     }
     
     // Assumes caller has set speed to match shooting position already.
@@ -98,7 +92,7 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
     }
     
     public void autoLoop(){
-        camera.loop();
+        camera.doLoop();
         intake.loop();
         shooter.loop();
         storage.loop();

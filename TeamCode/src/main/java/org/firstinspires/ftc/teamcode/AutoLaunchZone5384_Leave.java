@@ -18,17 +18,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.Artifact;
 
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
+
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
  * in either the autonomous or the TeleOp period of an FTC match. The names of OpModes appear on
@@ -109,7 +102,7 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
         
         giveUpTime = System.currentTimeMillis()+2000;
         while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.loop();
+            camera.doLoop();
             camera.telemetry(0);
             telemetry.update();
             

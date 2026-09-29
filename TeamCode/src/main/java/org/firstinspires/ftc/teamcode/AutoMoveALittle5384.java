@@ -60,7 +60,7 @@ public class AutoMoveALittle5384 extends AutoBaseClass_5384_2025 {
 
         
         while (obeliskValue==0) {
-            obeliskValue = camera.getAprilTag();
+            obeliskValue = camera.getObeliskID();
             telemetry.addData("obelisk", obeliskValue);
         }
       

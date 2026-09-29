@@ -140,7 +140,7 @@ public class AutoGoal5384 extends AutoBaseClass_5384_2025 {
             autoLoop();
             idle();
         }
-        shooter.setShooterDistance(camera.getDistanceToAprilTag()-5.0);
+        shooter.setShooterDistance(camera.getAutoaim_distance()-5.0);
 
         autoShoot();
         storage.select(fireOrder[1]);
@@ -261,10 +261,10 @@ public class AutoGoal5384 extends AutoBaseClass_5384_2025 {
                 idle();
             }
             if(false && camera.goalFound())
-                shooter.setShooterDistance(camera.getDistanceToAprilTag());
+                shooter.setShooterDistance(camera.getAutoaim_distance());
                 
-            if(camera.goalFound()&& Math.abs(camera.getBearingToAprilTag())>5.0){
-                driveTrain.turn(camera.getBearingToAprilTag(),0.8,0.5);
+            if(camera.goalFound()&& Math.abs(camera.getAutoaim_bearing())>5.0){
+                driveTrain.turn(camera.getAutoaim_bearing(),0.8,0.5);
             } 
             // if(!storage.isCenterLoaded())
             //     storage.select(fireOrder[0]);

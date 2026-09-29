@@ -1,46 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.LED;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import java.util.Locale;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
@@ -60,7 +27,7 @@ public class Teleop5384_2025 extends OpMode {
     Intake_5384_2025 intake;
     Shooter_5384_2025 shooter;
     Storage_5384_2025 storage;
-    RobotCamera camera;
+    DecodeGameCamera camera;
     Lift_5384_2025 lift;
     ColorSensor_5384_2025 colorSensor;
     boolean red_goal_found = false;
@@ -93,7 +60,7 @@ public class Teleop5384_2025 extends OpMode {
         if (!DISABLE_LIFT) {
             lift = new Lift_5384_2025(hardwareMap, telemetry);
         }
-        camera = new RobotCamera(hardwareMap, telemetry);
+        camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
         
         //colorSensor = new ColorSensor_5384_2025(camera, telemetry);
 
@@ -112,7 +79,7 @@ public class Teleop5384_2025 extends OpMode {
         doStorage();
         doLift();
 
-        camera.loop();
+        camera.doLoop();
         driveTrain.loop();
         intake.loop();
         shooter.loop();
@@ -207,8 +174,8 @@ public class Teleop5384_2025 extends OpMode {
         blue_goal_found = camera.blueGoalFound();
         
         if(camera.goalFound()){
-            autoaim_bearing = camera.getBearingToAprilTag();
-            autoaim_distance = camera.getDistanceToAprilTag();
+            autoaim_bearing = camera.getAutoaim_bearing();
+            autoaim_distance = camera.getAutoaim_distance();
             double aim_range_adj = (115-autoaim_distance)/(115-50)*3.0;
             if (!LED_TROUBLESHOOTING) {
                 if (Double.isNaN(autoaim_bearing)) {
