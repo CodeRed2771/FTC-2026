@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.annotation.SuppressLint;
+
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
+
 import java.util.List;
 
 
@@ -14,14 +17,13 @@ public class RobotCamera {
     private static final boolean USE_WEBCAM = true; 
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
-    private HardwareMap hardwareMap;
-    private Telemetry telemetry;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
     
     private List<AprilTagDetection> currentDetections;
     private List<AprilTagDetection> attemptedDetections;
     private long lastDetectionTime;
-    private final long refresh_period = 1;
-    
+
     private int obelisk_id = 0;
     
     private final int red_id = 24;
@@ -78,10 +80,15 @@ public class RobotCamera {
         return obelisk_id;
     }
 
-    public AprilTagDetection findAprilTag(int tagID) {
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.id == tagID) {
-                return detection;
+    public AprilTagSingleDetection findAprilTag(int tagID) {
+        if (currentDetections != null) {
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection instanceof AprilTagSingleDetection) {
+                    AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
+                    // Do single Tag processing here
+                    if (singleDet.id == tagID)
+                        return singleDet;
+                }
             }
         }
         return null;
@@ -110,25 +117,29 @@ public class RobotCamera {
     private void doDetection() {
         currentDetections = aprilTag.getDetections();
         lastDetectionTime = System.currentTimeMillis();
-        CaptureTagets();
+        CaptureTargets();
     }
-    
-    private void CaptureTagets(){
+
+    private void CaptureTargets(){
         found_id = 0;
         if(currentDetections != null){
             for (AprilTagDetection detection : currentDetections) {
-                switch(detection.id){
-                    case red_id:
-                    case blue_id:
-                        found_id = detection.id;
-                        autoaim_bearing = detection.ftcPose.bearing;
-                        autoaim_distance = detection.ftcPose.range;
-                        break;
-                    case 21:
-                    case 22:
-                    case 23:
-                        obelisk_id = detection.id;
-                        break;
+                if (detection instanceof AprilTagSingleDetection) {
+                    AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
+                    // Do single Tag processing here
+                    switch (singleDet.id) {
+                        case red_id:
+                        case blue_id:
+                            found_id = singleDet.id;
+                            autoaim_bearing = singleDet.ftcPose.bearing;
+                            autoaim_distance = singleDet.ftcPose.range;
+                            break;
+                        case 21:
+                        case 22:
+                        case 23:
+                            obelisk_id = singleDet.id;
+                            break;
+                    }
                 }
             }
         }
@@ -154,39 +165,56 @@ public class RobotCamera {
     
     public int getFirstAprilTag() {
         int result = 0;
-        if (currentDetections.size() > 0) {
-            result = currentDetections.get(0).id;
+        if(currentDetections != null){
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection instanceof AprilTagSingleDetection) {
+                    AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
+                    result = singleDet.id;
+                    break;
+                }
+            }
         }
         return result;
     }
     
-    public AprilTagDetection getDetection(){
-        AprilTagDetection result = null;
-        if (currentDetections != null && currentDetections.size() > 0) {
-            result = currentDetections.get(0);
+    public AprilTagSingleDetection getDetection(){
+        AprilTagSingleDetection result = null;
+        if(currentDetections != null){
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection instanceof AprilTagSingleDetection) {
+                    result = (AprilTagSingleDetection) detection;
+                    break;
+                }
+            }
         }
         return result;
     }
     
+    @SuppressLint("DefaultLocale")
     public void telemetryAprilTag() {
 
 //        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-    
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                double offsetDegrees = detection.ftcPose.bearing;
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-                telemetry.addData("Degrees off", offsetDegrees);
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
+        if (currentDetections != null) {
+            telemetry.addData("# AprilTags Detected", currentDetections.size());
+        
+            // Step through the list of detections and display info for each one.
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection instanceof AprilTagSingleDetection) {
+                    AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
+                    if (singleDet.metadata != null) {
+                        double offsetDegrees = singleDet.ftcPose.bearing;
+                        telemetry.addLine(String.format("\n==== (ID %d) %s", singleDet.id, singleDet.metadata.name));
+                        telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", singleDet.ftcPose.x, singleDet.ftcPose.y, singleDet.ftcPose.z));
+                        telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", singleDet.ftcPose.pitch, singleDet.ftcPose.roll, singleDet.ftcPose.yaw));
+                        telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", singleDet.ftcPose.range, singleDet.ftcPose.bearing, singleDet.ftcPose.elevation));
+                        telemetry.addData("Degrees off", offsetDegrees);
+                    } else {
+                        telemetry.addLine(String.format("\n==== (ID %d) Unknown", singleDet.id));
+                        telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", singleDet.center.x, singleDet.center.y));
+                    }
+                }
+            }   // end for() loop
+        }
 
         // Add "key" information to telemetry
         telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
