@@ -5,15 +5,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Intake_5384_2025 {
-    private DcMotor intake;
-    private Telemetry telemetry;
+    private final DcMotor _intake_motor;
+    private final Telemetry _telemetry;
     
     public enum IntakeMode {
-        IN(0.8),
+        RUN(0.8),
         STOP(0.0),
-        EJECT(-1.0);
+        REVERSE(-1.0);
 
-        private double val;
+        private final double val;
         private IntakeMode(double new_value)
         {
             val = new_value;
@@ -24,37 +24,37 @@ public class Intake_5384_2025 {
     }
     private IntakeMode mode = IntakeMode.STOP;
     
-    public Intake_5384_2025 (HardwareMap hardwareMap, Telemetry _telemetry) {
-        telemetry = _telemetry;
-        intake = hardwareMap.dcMotor.get("intake");
+    public Intake_5384_2025 (HardwareMap hardwareMap, Telemetry telemetry) {
+        _telemetry = telemetry;
+        _intake_motor = hardwareMap.dcMotor.get("intake");
     }
     
     public void startIntake() {
-        mode = IntakeMode.IN;
-        intake.setPower(mode.value());
+        mode = IntakeMode.RUN;
+        _intake_motor.setPower(mode.value());
     }
 
     public void stopIntake() {
         mode = IntakeMode.STOP;
-        intake.setPower(mode.value());
+        _intake_motor.setPower(mode.value());
         
     }
 
     public void ejectIntake() {
-        mode = IntakeMode.EJECT;
-        intake.setPower(mode.value());
+        mode = IntakeMode.REVERSE;
+        _intake_motor.setPower(mode.value());
         
     }
     
     public void loop(){
-        intake.setPower(mode.value());
+        _intake_motor.setPower(mode.value());
     }
     
     public void telemetry(int page){
         switch(page)
         {
             default:
-                telemetry.addData("Intake",mode.toString());
+                _telemetry.addData("Intake",mode.toString());
         }
     }
 
