@@ -40,28 +40,24 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
 
     @Override
     public void runOpMode() {
-        int obeliskValue = 0;
         double giveUpTime = 0;
         boolean getSecondArtifacts = false;
         double delayedStart = 0.0;
         int up_deadband = 0;
         int down_deadband = 0;
-        Artifact[] fireOrder = {Artifact.UNKNOWN, Artifact.UNKNOWN, Artifact.UNKNOWN};
+
         
         initializeRobot();
         
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
+
         // driveTrain.setRunToPosition();
-        storage.ejectorStow();
+
         
         while (!isStarted()) {
-            if(gamepad1.y || gamepad2.y)
-                getSecondArtifacts = true;
-            if(gamepad1.a || gamepad2.a)
-                getSecondArtifacts = false;
+
                 
             if(gamepad1.dpad_up || gamepad2.dpad_up){
                 up_deadband += 1;
@@ -79,7 +75,7 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
                 down_deadband = 0;
             }
             delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,15);
+            delayedStart = Math.min(delayedStart,30);
             telemetry.addData("DELAY", delayedStart);
             telemetry.addData("SHOOT EXTRA", getSecondArtifacts);
 
@@ -88,56 +84,36 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
         }
         opModeIsActive();
 
-        storage.ejectorStow();
-        storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
 
-        giveUpTime = System.currentTimeMillis()+delayedStart*1000;
-        while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            idle();
-        }
+        delay(2000);
 
-        // sleep(5);
-        driveTrain.driveDistance(-10, 1, 3);
-        
-        giveUpTime = System.currentTimeMillis()+2000;
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
-            
-            idle();
-        }
 
-        
-        if (isBlueAlliance()) {
-            driveTrain.turn(-21,0.6,3);
-        } else
-            driveTrain.turn(23,0.6,3);
-            
-        obeliskValue = camera.getObeliskID();
-        if (obeliskValue==21) { // GPP
-            fireOrder[0] = Artifact.GREEN;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==22) { // PGP
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.GREEN;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==23) { // PPG
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.GREEN;
-        } 
+        // #1. drive Forward to get Leave points
+        driveTrain.driveDistance(12.0, 1, 3);
 
-            if (isBlueAlliance()) {
-                driveTrain.turn(75,1,5);
-            } else {
-                driveTrain.turn(-75,1,5);
-            }
+        //# 2.0 look for the hive to be tipped how we want.
+        //wait up to X
+
+        delay(2000);
+
+        // #2 shoot the pollen
+        //#2.1 start spining the motors
+        //2.2 get pollen from storage ready to go
+        //2.3 set the based on distence-may only need one or two speeds to select
+        //2.4 wait until the motors are ready.
+        // - wait until it stops accelerating
+        // - wait a fixed amount of time.
+        storage.ejectorLaunch();
+        //2.5 transfer from storage to the shooter
+        // #3 park in the parking zone
+        // #3.1 move right 5 ft
+
+        driveTrain.slideDistance(-5*12.0,1.0,10.0);
+
+        delay(2000);
 
 
             driveTrain.driveDistance(56,0.8,3);
-        
+
     }
 }
