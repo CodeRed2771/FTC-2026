@@ -70,7 +70,17 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
         storage = new Storage_5384_2025(hardwareMap, telemetry);
         camera = new RobotCamera(hardwareMap, telemetry);
     }
-    
+    public void delay(double milliseconds) {
+        double giveUpTime;
+        giveUpTime = System.currentTimeMillis()+milliseconds;
+        while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
+            camera.loop();
+            camera.telemetry(0);
+            telemetry.update();
+
+            idle();
+        }
+    }
     // Assumes caller has set speed to match shooting position already.
     protected void autoShoot(){
         double giveUpTime = 0;
