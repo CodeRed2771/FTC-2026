@@ -16,6 +16,16 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
 
 public class Teleop5384_2025 extends OpMode {
 
+    public void main(){
+        boolean isGood; // declare memery space
+        isGood = true;
+       if(isGood) ;
+        ;
+        if(isGood) {
+            isGood = false;
+        }
+        ;
+    }
     Orientation angles;
     IMU imu;
     Acceleration gravity;
@@ -239,7 +249,7 @@ public class Teleop5384_2025 extends OpMode {
                 if (wasShooting && (ejectorPosition == EjectorPosition.UP)) {
                     storage.ejectorStow();
                     wasShooting = false;
-                    storage.select(Artifact.UNKNOWN);
+
                 }
                 // Check to see if we are ready to shoot again.
                 if (!wasShooting
