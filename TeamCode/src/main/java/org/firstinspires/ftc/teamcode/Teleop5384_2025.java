@@ -19,7 +19,7 @@ public class Teleop5384_2025 extends OpMode {
     Orientation angles;
     IMU imu;
     Acceleration gravity;
-    
+
     RevBlinkinLedDriver led;
     RevBlinkinLedDriver.BlinkinPattern led_pattern;
 
@@ -32,7 +32,7 @@ public class Teleop5384_2025 extends OpMode {
     ColorSensor_5384_2025 colorSensor;
     boolean red_goal_found = false;
     boolean blue_goal_found = false;
-    
+
 
     final double AIM_LED_TOLERANCE = 1.0;
     final double aim_bias = 2.0;
@@ -47,12 +47,12 @@ public class Teleop5384_2025 extends OpMode {
     private boolean LED_TROUBLESHOOTING = false;
     private boolean DISABLE_LIFT = true;
 
-    
+
     @Override
     public void init() {
-        
-        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
-        
+
+        led = hardwareMap.get(RevBlinkinLedDriver.class, "led");
+
         driveTrain = new DriveTrain_5384_2025(hardwareMap, telemetry);
         intake = new Intake_5384_2025(hardwareMap, telemetry);
         storage = new Storage_5384_2025(hardwareMap, telemetry);
@@ -60,14 +60,14 @@ public class Teleop5384_2025 extends OpMode {
         if (!DISABLE_LIFT) {
             lift = new Lift_5384_2025(hardwareMap, telemetry);
         }
-        camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
-        
+        camera = new DecodeGameCamera(hardwareMap, telemetry, "Webcam 1");
+
         //colorSensor = new ColorSensor_5384_2025(camera, telemetry);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
-    
+
     @Override
     public void loop() {
 
@@ -84,20 +84,21 @@ public class Teleop5384_2025 extends OpMode {
         intake.loop();
         shooter.loop();
         storage.loop();
-        
+
         doTelemetry();
     }
-    
+
     boolean back_prev = false;
     int page = 0;
-    private void doTelemetry(){
+
+    private void doTelemetry() {
         boolean back = (gamepad1.back || gamepad2.back);
-        if(!back_prev && back)
+        if (!back_prev && back)
             page = (page + 1) % 10;
         back_prev = back;
-        
+
         telemetry.addData("Page", page);
-        switch(page){
+        switch (page) {
             case 1:
                 driveTrain.telemetry(page - 1);
                 if (LED_TROUBLESHOOTING) {
@@ -139,7 +140,7 @@ public class Teleop5384_2025 extends OpMode {
                     led.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                 }
                 camera.telemetry(page - 7);
-                break; 
+                break;
             case 9:
                 if (LED_TROUBLESHOOTING) {
                     led.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
@@ -156,31 +157,31 @@ public class Teleop5384_2025 extends OpMode {
                 }
                 break;
         }
-        
+
         telemetry.update();
     }
-    
+
     private void doLift() {
         if (lift == null) {
             return;
         }
         if (gamepad1.right_trigger > 0.5 && gamepad1.left_trigger > 0.5) {
-            
-        }    
+
+        }
     }
-    
+
     private void doCamera() {
         red_goal_found = camera.redGoalFound();
         blue_goal_found = camera.blueGoalFound();
-        
-        if(camera.goalFound()){
+
+        if (camera.goalFound()) {
             autoaim_bearing = camera.getAutoaim_bearing();
             autoaim_distance = camera.getAutoaim_distance();
-            double aim_range_adj = (115-autoaim_distance)/(115-50)*3.0;
+            double aim_range_adj = (115 - autoaim_distance) / (115 - 50) * 3.0;
             if (!LED_TROUBLESHOOTING) {
                 if (Double.isNaN(autoaim_bearing)) {
                     led.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-                } else if (autoaim_bearing - aim_bias < -1 * (AIM_LED_TOLERANCE + aim_range_adj) ) {
+                } else if (autoaim_bearing - aim_bias < -1 * (AIM_LED_TOLERANCE + aim_range_adj)) {
                     led.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                 } else if (autoaim_bearing - aim_bias > (AIM_LED_TOLERANCE + aim_range_adj)) {
                     led.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
@@ -190,47 +191,45 @@ public class Teleop5384_2025 extends OpMode {
             }
         } else {
             led.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
-            autoaim_bearing = 0.0;   
+            autoaim_bearing = 0.0;
         }
     }
 
     double steerToTag = 0.0;
-    private void doDrive(){
+
+    private void doDrive() {
         double slide = -gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
         double forward = -gamepad1.left_stick_y;
 
-        driveTrain.runDrive_fieldCentric(gamepad1, forward, slide, turn+steerToTag);
+        driveTrain.runDrive_fieldCentric(gamepad1, forward, slide, turn + steerToTag);
     }
-    
+
     private boolean wasShooting = false;
+
     private void doShooter() {
-    
+
         if (gamepad2.left_trigger > .5) {
             autoaim = true;
-            steerToTag = Math.max(-autoAim_limit,Math.min(autoAim_kP * autoaim_bearing,autoAim_limit));
-        }
-        else
+            steerToTag = Math.max(-autoAim_limit, Math.min(autoAim_kP * autoaim_bearing, autoAim_limit));
+        } else
             steerToTag = 0.0;
 
         if (gamepad2.dpad_up) {
             autoaim = false;
             shooter.setPowerFar();
-        }
-        else if (gamepad2.dpad_left || gamepad2.dpad_right) {
+        } else if (gamepad2.dpad_left || gamepad2.dpad_right) {
             autoaim = false;
             shooter.setPowerMid();
-        }
-        else if (gamepad2.dpad_down) {
+        } else if (gamepad2.dpad_down) {
             autoaim = false;
             shooter.setPowerNear();
         }
-        
-        if (autoaim)
-        {
+
+        if (autoaim) {
             shooter.setShooterDistance(autoaim_distance);
         }
-    
+
         if (false) {
             // Continuous Shot Mode
             if (gamepad2.right_trigger > .5) {
@@ -243,10 +242,10 @@ public class Teleop5384_2025 extends OpMode {
                 }
                 // Check to see if we are ready to shoot again.
                 if (!wasShooting
-                    // && storage.getStoredArtifactCount() > 0
-                    // && shooter.readyToShoot()
-                    // && shooter.atShootingSpeed()
-                    && ejectorPosition == EjectorPosition.DOWN) {
+                        // && storage.getStoredArtifactCount() > 0
+                        // && shooter.readyToShoot()
+                        // && shooter.atShootingSpeed()
+                        && ejectorPosition == EjectorPosition.DOWN) {
                     wasShooting = true;
                     storage.ejectorLaunch();
                 }
@@ -256,70 +255,58 @@ public class Teleop5384_2025 extends OpMode {
             if (gamepad2.right_trigger > .5) {
                 wasShooting = true;
                 storage.ejectorLaunch();
-            }
-            else if (wasShooting && (storage.getEjector() == EjectorPosition.UP))
-            {
+            } else if (wasShooting && (storage.getEjector() == EjectorPosition.UP)) {
                 storage.ejectorStow();
                 wasShooting = false;
             }
         }
-        
-        if(gamepad2.right_bumper)
-        {
+
+        if (gamepad2.right_bumper) {
             autoaim = false;
             shooter.stop();
         }
     }
-    
+
     private void doIntake() {
         if (gamepad1.a) {
             intake.startIntake();
             shooter.stop();
             storage.ejectorStow();
 
-        }
-        else if (gamepad1.x)  {
+        } else if (gamepad1.x) {
             intake.stopIntake();
         }
-        if (gamepad1.y){
+        if (gamepad1.y) {
             intake.ejectIntake();
         }
     }
-    
+
     static boolean pressed = false;
+
     private void doStorage() {
-        if(gamepad2.right_bumper)
+        if (gamepad2.right_bumper)
             storage.ejectorStow();
 
-            
-        if(gamepad2.start)
+
+        if (gamepad2.start)
             storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        else if(gamepad2.y && !pressed) // top
+        else if (gamepad2.y && !pressed) // top
         {
             pressed = true;
             storage.captureArtifact();
-        }
-        else if(gamepad2.a && !pressed)
-        {
+        } else if (gamepad2.a && !pressed) {
             pressed = true;
             storage.select(Artifact.UNKNOWN);
-        }
-        else if(gamepad2.b && !pressed)
-        {
+        } else if (gamepad2.b && !pressed) {
             pressed = true;
             storage.ejectorStow();
             storage.setWiperPosition(WiperPosition.RIGHT, WiperPosition.RIGHT);
-        }
-        else if(gamepad2.x && !pressed)
-        {
+        } else if (gamepad2.x && !pressed) {
             pressed = true;
             storage.ejectorStow();
             storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.LEFT);
-        }
-        else{
+        } else {
             pressed = false;
         }
-
-   }
-    
+    }
 }

@@ -40,29 +40,19 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
 
     @Override
     public void runOpMode() {
-        int obeliskValue = 0;
-        double giveUpTime = 0;
-        boolean getSecondArtifacts = false;
         double delayedStart = 0.0;
         int up_deadband = 0;
         int down_deadband = 0;
-        Artifact[] fireOrder = {Artifact.UNKNOWN, Artifact.UNKNOWN, Artifact.UNKNOWN};
         
         initializeRobot();
         
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
         // driveTrain.setRunToPosition();
         storage.ejectorStow();
         
         while (!isStarted()) {
-            if(gamepad1.y || gamepad2.y)
-                getSecondArtifacts = true;
-            if(gamepad1.a || gamepad2.a)
-                getSecondArtifacts = false;
-                
             if(gamepad1.dpad_up || gamepad2.dpad_up){
                 up_deadband += 1;
             } else {
@@ -79,65 +69,44 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
                 down_deadband = 0;
             }
             delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,15);
+            delayedStart = Math.min(delayedStart,30);
             telemetry.addData("DELAY", delayedStart);
-            telemetry.addData("SHOOT EXTRA", getSecondArtifacts);
 
             setupAllianceAndPosition();
             idle();
         }
         opModeIsActive();
 
-        storage.ejectorStow();
-        storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
+        delay(delayedStart * 1000);
 
-        giveUpTime = System.currentTimeMillis()+delayedStart*1000;
-        while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            idle();
-        }
-
-        // sleep(5);
+        // #1.  Drive forward to get Leave points
         driveTrain.driveDistance(-10, 1, 3);
         
-        giveUpTime = System.currentTimeMillis()+2000;
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
-            
-            idle();
-        }
+        delay(2000);
 
-        
-        if (isBlueAlliance()) {
-            driveTrain.turn(-21,0.6,3);
-        } else
-            driveTrain.turn(23,0.6,3);
-            
-        obeliskValue = camera.getObeliskID();
-        if (obeliskValue==21) { // GPP
-            fireOrder[0] = Artifact.GREEN;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==22) { // PGP
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.GREEN;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==23) { // PPG
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.GREEN;
-        } 
+        // #2 Shoot the Pollen
+        // 2.1 Start spinning the motor
+        shooter.setPowerMid();
 
-            if (isBlueAlliance()) {
-                driveTrain.turn(75,1,5);
-            } else {
-                driveTrain.turn(-75,1,5);
-            }
+        // 2.2 Get pollen from storage ready to go
+        //storage.select();
+
+        // 2.3 Set the speed based on distance
+        shooter.setPowerMid();
+
+        // 2.4 Wait until the motors are ready
+        //  - Wait fixed amount of time
+        delay(1000);
+        //  - Wait until it stops accelerating
+        //  - Wait until motor is at speed
+        // 2.5 Transfer from storage to the shooter
+        storage.ejectorLaunch();
 
 
-            driveTrain.driveDistance(56,0.8,3);
-        
+        // #3 Park in the Parking zone
+
+
+        // #3.1 Move right 5 ft
+        driveTrain.slideDistance(-60.0, 1.0, 10.0);
     }
 }
