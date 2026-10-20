@@ -37,107 +37,81 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
 public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
 
     // Starts with robot facing the wall in the Launch Zone
+private int MAX_RUNTIME = 30;
 
     @Override
     public void runOpMode() {
-        int obeliskValue = 0;
-        double giveUpTime = 0;
-        boolean getSecondArtifacts = false;
+
         double delayedStart = 0.0;
         int up_deadband = 0;
         int down_deadband = 0;
-        Artifact[] fireOrder = {Artifact.UNKNOWN, Artifact.UNKNOWN, Artifact.UNKNOWN};
-        
         initializeRobot();
-        
+
         telemetry.addData("Status", "Initialized");
-        telemetry.update();
-        // Wait for the game to start (driver presses PLAY)
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
-        // driveTrain.setRunToPosition();
-        storage.ejectorStow();
-        
         while (!isStarted()) {
-            if(gamepad1.y || gamepad2.y)
-                getSecondArtifacts = true;
-            if(gamepad1.a || gamepad2.a)
-                getSecondArtifacts = false;
-                
-            if(gamepad1.dpad_up || gamepad2.dpad_up){
+
+
+            if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 up_deadband += 1;
             } else {
                 if (up_deadband > 0)
                     delayedStart += 1.0;
                 up_deadband = 0;
             }
-            if(gamepad1.dpad_down || gamepad2.dpad_down)
-            {
+            if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 down_deadband += 1;
             } else {
                 if (down_deadband > 0)
                     delayedStart -= 1.0;
                 down_deadband = 0;
             }
-            delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,15);
+            delayedStart = Math.max(delayedStart, 0);
+            delayedStart = Math.min(delayedStart, 30);
             telemetry.addData("DELAY", delayedStart);
-            telemetry.addData("SHOOT EXTRA", getSecondArtifacts);
+
 
             setupAllianceAndPosition();
             idle();
         }
         opModeIsActive();
 
-        storage.ejectorStow();
-        storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
+// Auto tip one: Drive forward to get LEAD points.
+        driveTrain.driveDistance(12.0, 1, 3);
 
-        giveUpTime = System.currentTimeMillis()+delayedStart*1000;
-        while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            idle();
-        }
-
+        // Auto tip 2: Look for the hive to be tipped how you want
+        //Wait up to X seconds leaving enough time to park
+       delay(delayedStart * 1000);
         // sleep(5);
         driveTrain.driveDistance(-10, 1, 3);
-        
-        giveUpTime = System.currentTimeMillis()+2000;
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
-            
-            idle();
-        }
 
-        
-        if (isBlueAlliance()) {
-            driveTrain.turn(-21,0.6,3);
-        } else
-            driveTrain.turn(23,0.6,3);
-            
-        obeliskValue = camera.getObeliskID();
-        if (obeliskValue==21) { // GPP
-            fireOrder[0] = Artifact.GREEN;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==22) { // PGP
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.GREEN;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==23) { // PPG
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.GREEN;
-        } 
+       delay(1000);
+            // SHOOT THE POLLEN, YOU STUPID AUTO!!!
+            // Start spinning the motors on the shooter
+            shooter.setPowerMid();
 
-            if (isBlueAlliance()) {
-                driveTrain.turn(75,1,5);
-            } else {
-                driveTrain.turn(-75,1,5);
-            }
+            //Ensure that game element is ready to shoot from storage
+            shooter.setPowerMid();
+
+            //SET SPEED BASED ON DISTANCE   -may only need one to two speed selections
+            // Wait until motors are ready
+            // Wait for fixed amount of time
+            // Wait until it stops accelerating
+            // Wait until motor is at speed target
+            //2.5 transfer from storage to shooter
+            storage.ejectorLaunch();
+
+        //Decide if we wait until motors get back up to speed or just shoot all elements
+            delay(1500);
+        // Also, park in parking zone.
+        // Move right 5 feet
+
+        driveTrain.slideDistance(-5 * 12, 1.0, 10.0);
 
 
-            driveTrain.driveDistance(56,0.8,3);
-        
+
+
+        idle();
+
     }
+
 }

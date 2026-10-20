@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
 
 public class Teleop5384_2025 extends OpMode {
 
+
+
     Orientation angles;
     IMU imu;
     Acceleration gravity;
@@ -37,8 +39,11 @@ public class Teleop5384_2025 extends OpMode {
     final double AIM_LED_TOLERANCE = 1.0;
     final double aim_bias = 2.0;
 
+
+
+
     boolean aPressed = false;
-    int artifactCount = 3;
+
     private final double autoAim_limit = 0.5;
     private final double autoAim_kP = autoAim_limit / 25.0; // max command / Max offangle
     private double autoaim_distance = 0.0;

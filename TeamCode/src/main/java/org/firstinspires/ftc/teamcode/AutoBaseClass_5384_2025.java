@@ -64,7 +64,23 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
         storage = new Storage_5384_2025(hardwareMap, telemetry);
         camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
     }
-    
+
+    public void delay(double milliseconds){
+
+        double giveUpTime = 0;
+
+        giveUpTime = System.currentTimeMillis() + 1500;
+        while (camera.getObeliskID() == 0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
+            camera.doLoop();
+            camera.telemetry(0);
+            telemetry.update();
+
+            idle();
+        }
+
+
+    }
+
     // Assumes caller has set speed to match shooting position already.
     protected void autoShoot(){
         double giveUpTime = 0;
