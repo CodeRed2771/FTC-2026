@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
 
-@TeleOp(name = "5384 Drive 2025", group = "Iterative Opmode")
+@TeleOp(name = "Rajkumar", group = "Iterative Opmode")
 
 public class Teleop5384_2025 extends OpMode {
 
@@ -65,6 +65,7 @@ public class Teleop5384_2025 extends OpMode {
         //colorSensor = new ColorSensor_5384_2025(camera, telemetry);
 
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("My Name", "Rajkumar");
         telemetry.update();
     }
     
@@ -205,17 +206,32 @@ public class Teleop5384_2025 extends OpMode {
     
     private boolean wasShooting = false;
     private void doShooter() {
-    
+        double aim_command = autoAim_kP * autoaim_bearing;
+
         if (gamepad2.left_trigger > .5) {
             autoaim = true;
-            steerToTag = Math.max(-autoAim_limit,Math.min(autoAim_kP * autoaim_bearing,autoAim_limit));
+
+            if (aim_command >= autoAim_limit) {
+                aim_command = autoAim_limit;
+            } else if (aim_command <= -autoAim_limit) {
+                aim_command = -autoAim_limit;
+            } else {
+                aim_command = aim_command;
+            }
+            steerToTag = aim_command;
+
+
+            steerToTag = Math.max(-autoAim_limit,
+                         Math.min(autoAim_limit,
+                                  autoAim_limit));
         }
         else
             steerToTag = 0.0;
 
         if (gamepad2.dpad_up) {
             autoaim = false;
-            shooter.setPowerFar();
+            //shooter.setPowerFar();
+            shooter.setShooterSpeed(5000.5);
         }
         else if (gamepad2.dpad_left || gamepad2.dpad_right) {
             autoaim = false;
@@ -254,6 +270,9 @@ public class Teleop5384_2025 extends OpMode {
         } else {
             // Single Shot mode
             if (gamepad2.right_trigger > .5) {
+
+                shooter.setShooterSpeed(5000.0);
+
                 wasShooting = true;
                 storage.ejectorLaunch();
             }
@@ -267,10 +286,9 @@ public class Teleop5384_2025 extends OpMode {
         if(gamepad2.right_bumper)
         {
             autoaim = false;
-            shooter.stop();
+            shooter.setShooterSpeed(0.0);
         }
     }
-    
     private void doIntake() {
         if (gamepad1.a) {
             intake.startIntake();

@@ -20,8 +20,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
-
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
  * in either the autonomous or the TeleOp period of an FTC match. The names of OpModes appear on
@@ -32,37 +30,28 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Auto Launch Zone Leave", group = "5384")
+@Autonomous(name = "Auto Launch Zone Right", group = "5384")
 
-public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
+public class AutoLaunchZone5384_Right extends AutoBaseClass_5384_2025 {
 
     // Starts with robot facing the wall in the Launch Zone
-
+    private int Max_RUNTIME = 30;
     @Override
     public void runOpMode() {
-        int obeliskValue = 0;
-        double giveUpTime = 0;
-        boolean getSecondArtifacts = false;
         double delayedStart = 0.0;
         int up_deadband = 0;
         int down_deadband = 0;
-        Artifact[] fireOrder = {Artifact.UNKNOWN, Artifact.UNKNOWN, Artifact.UNKNOWN};
-        
+
         initializeRobot();
         
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
         // driveTrain.setRunToPosition();
         storage.ejectorStow();
         
         while (!isStarted()) {
-            if(gamepad1.y || gamepad2.y)
-                getSecondArtifacts = true;
-            if(gamepad1.a || gamepad2.a)
-                getSecondArtifacts = false;
-                
+
             if(gamepad1.dpad_up || gamepad2.dpad_up){
                 up_deadband += 1;
             } else {
@@ -79,65 +68,44 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
                 down_deadband = 0;
             }
             delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,15);
+            delayedStart = Math.min(delayedStart,30);
             telemetry.addData("DELAY", delayedStart);
-            telemetry.addData("SHOOT EXTRA", getSecondArtifacts);
 
             setupAllianceAndPosition();
             idle();
         }
         opModeIsActive();
 
-        storage.ejectorStow();
-        storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
+        delay(delayedStart * 1000);
+  /*      driveTrain.driveDistance(12.0,1,3);
+        driveTrain.slideDistance(12.0, 1, 3 );
+        shooter.setPowerMid();
+  */
 
-        giveUpTime = System.currentTimeMillis()+delayedStart*1000;
-        while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            idle();
+        // step 1: Move and shoot the preloaded pollen
+        // 1.1 : move forward 0.5ft
+        driveTrain.driveDistance(15.0, 0.6, 3);
+
+        // 1.2 : ready the shooter (spin it up)
+        shooter.setPowerMid();
+
+        // 1.3 : look for the april tag
+        camera.doLoop();
+        if(camera.goalFound()) {
+            double aim = camera.getAutoaim_bearing();
         }
 
-        // sleep(5);
-        driveTrain.driveDistance(-10, 1, 3);
-        
-        giveUpTime = System.currentTimeMillis()+2000;
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
-            
-            idle();
-        }
 
-        
-        if (isBlueAlliance()) {
-            driveTrain.turn(-21,0.6,3);
-        } else
-            driveTrain.turn(23,0.6,3);
-            
-        obeliskValue = camera.getObeliskID();
-        if (obeliskValue==21) { // GPP
-            fireOrder[0] = Artifact.GREEN;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==22) { // PGP
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.GREEN;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==23) { // PPG
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.GREEN;
-        } 
+        // 1.4 : adjust aiming (use april tag)
 
-            if (isBlueAlliance()) {
-                driveTrain.turn(75,1,5);
-            } else {
-                driveTrain.turn(-75,1,5);
-            }
+        // 1.5 : If not seeing april tag, keep pollen and skip to step 2
+
+        // 1.6 : Fire all pole
 
 
-            driveTrain.driveDistance(56,0.8,3);
-        
+        // step 2: Slide over to the runway
+
+
+        // step 3: Ride the wall into the parking zone
     }
 }
