@@ -40,46 +40,42 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
 
     @Override
     public void runOpMode() {
-        int obeliskValue = 0;
-        double giveUpTime = 0;
         boolean getSecondArtifacts = false;
         double delayedStart = 0.0;
         int up_deadband = 0;
         int down_deadband = 0;
-        Artifact[] fireOrder = {Artifact.UNKNOWN, Artifact.UNKNOWN, Artifact.UNKNOWN};
-        
+
         initializeRobot();
-        
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
         // driveTrain.setRunToPosition();
         storage.ejectorStow();
-        
+
         while (!isStarted()) {
-            if(gamepad1.y || gamepad2.y)
+            if (gamepad1.y || gamepad2.y)
                 getSecondArtifacts = true;
-            if(gamepad1.a || gamepad2.a)
+            if (gamepad1.a || gamepad2.a)
                 getSecondArtifacts = false;
-                
-            if(gamepad1.dpad_up || gamepad2.dpad_up){
+
+            if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 up_deadband += 1;
             } else {
                 if (up_deadband > 0)
                     delayedStart += 1.0;
                 up_deadband = 0;
             }
-            if(gamepad1.dpad_down || gamepad2.dpad_down)
-            {
+            if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 down_deadband += 1;
             } else {
                 if (down_deadband > 0)
                     delayedStart -= 1.0;
                 down_deadband = 0;
             }
-            delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,15);
+            delayedStart = Math.max(delayedStart, 0);
+            delayedStart = Math.min(delayedStart, 15);
             telemetry.addData("DELAY", delayedStart);
             telemetry.addData("SHOOT EXTRA", getSecondArtifacts);
 
@@ -88,56 +84,33 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
         }
         opModeIsActive();
 
-        storage.ejectorStow();
-        storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        storage.preload(Artifact.PURPLE, Artifact.PURPLE, Artifact.GREEN);
-
-        giveUpTime = System.currentTimeMillis()+delayedStart*1000;
-        while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            idle();
-        }
+        delay(delayedStart * 1000);
 
         // sleep(5);
-        driveTrain.driveDistance(-10, 1, 3);
-        
-        giveUpTime = System.currentTimeMillis()+2000;
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
-            
-            idle();
+        driveTrain.driveDistance(12, 1, 3);
+
+        delay(1000);
+
+        shooter.setPowerMid();
+
+        shooter.setPowerMid();
+
+        delay(1000);
+        delay(1000);
+
+        driveTrain.slideDistance(5 * 12, 1.0, 3);
+
+
+        //  auto plan
+        // 1 move and shoot pollen
+        driveTrain.driveDistance(12, 1.0, 2);
+        camera.doLoop();
+
+        if (camera.goalFound()) {
+            double aim = camera.getAutoaim_bearing();
         }
 
-        
-        if (isBlueAlliance()) {
-            driveTrain.turn(-21,0.6,3);
-        } else
-            driveTrain.turn(23,0.6,3);
-            
-        obeliskValue = camera.getObeliskID();
-        if (obeliskValue==21) { // GPP
-            fireOrder[0] = Artifact.GREEN;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==22) { // PGP
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.GREEN;
-            fireOrder[2] = Artifact.PURPLE;
-        } else if (obeliskValue==23) { // PPG
-            fireOrder[0] = Artifact.PURPLE;
-            fireOrder[1] = Artifact.PURPLE;
-            fireOrder[2] = Artifact.GREEN;
-        } 
-
-            if (isBlueAlliance()) {
-                driveTrain.turn(75,1,5);
-            } else {
-                driveTrain.turn(-75,1,5);
-            }
-
-
-            driveTrain.driveDistance(56,0.8,3);
-        
+        // 2 slide over to runway
+        // 3 ride the wall into parking zone
     }
 }
