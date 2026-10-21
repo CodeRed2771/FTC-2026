@@ -159,7 +159,7 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
     public void delay(double milliseconds){
         double giveUpTime = 0;
         giveUpTime = System.currentTimeMillis()+milliseconds;
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
+        while ( opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
             camera.doLoop();
             camera.telemetry(0);
             telemetry.update();
