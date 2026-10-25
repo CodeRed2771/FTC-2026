@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
 import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
 
-@TeleOp(name = "Rajkumar", group = "Iterative Opmode")
+@TeleOp(name = "Asmitha", group = "Iterative Opmode")
 
 public class Teleop5384_2025 extends OpMode {
 
@@ -72,7 +72,7 @@ public class Teleop5384_2025 extends OpMode {
         //colorSensor = new ColorSensor_5384_2025(camera, telemetry);
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("My Name", "Rajkumar");
+        telemetry.addData("My Name", "Asmitha");
         telemetry.update();
     }
     

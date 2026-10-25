@@ -17,7 +17,7 @@ public class TestPinpointTeleop extends OpMode {
         pinpoint.init();
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("My Name", "Rajkumar");
+        telemetry.addData("My Name", "Asmitha");
         telemetry.update();
     }
 
