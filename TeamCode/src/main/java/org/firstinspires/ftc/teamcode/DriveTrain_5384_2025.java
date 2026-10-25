@@ -69,7 +69,7 @@ public class DriveTrain_5384_2025 {
     private double prev_forward = 0.0;
     private double prev_slide = 0.0;
     
-    IMU imu;
+    //IMU imu;
     Telemetry telemetry;
 
     public DriveTrain_5384_2025(HardwareMap hardwareMap, Telemetry _telemetry) {
@@ -79,7 +79,7 @@ public class DriveTrain_5384_2025 {
         backRight = hardwareMap.dcMotor.get("backRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
 
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        //frontRight.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -87,23 +87,23 @@ public class DriveTrain_5384_2025 {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        //frontLeft.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        //backLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        IMU.Parameters parameters = new IMU.Parameters(
-            new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
-                )
-            );
-            
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(parameters);
+//        IMU.Parameters parameters = new IMU.Parameters(
+//            new RevHubOrientationOnRobot(
+//                RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
+//                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+//                )
+//            );
+//
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        imu.initialize(parameters);
         
         resetGyro();
  
@@ -193,8 +193,9 @@ public class DriveTrain_5384_2025 {
     public void runDrive_fieldCentric(Gamepad gp, double forward, double slide, double turn){
         double new_forward = forward;
         double new_slide = slide;
-        angles = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);        
-        rot_angle = -(angles.firstAngle-init_angle);
+        //angles = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
+        // rot_angle = -(angles.firstAngle-init_angle);
+        rot_angle = 0;
         boolean reset_init_angle = gp.b;
         
         speedAdjust(gp);
@@ -481,7 +482,7 @@ public class DriveTrain_5384_2025 {
      * Resets the cumulative angle tracking to zero.
      */
     public void resetGyro() {
-        imu.resetYaw();
+        //imu.resetYaw();
         lastHeading = getHeadingSingleRotation();
 
         globalAngle = 0;
@@ -490,9 +491,10 @@ public class DriveTrain_5384_2025 {
     public double getHeadingSingleRotation() {
        
         YawPitchRollAngles robotOrientation;
-        robotOrientation = imu.getRobotYawPitchRollAngles();
+        //robotOrientation = imu.getRobotYawPitchRollAngles();
         
-        return - robotOrientation.getYaw(AngleUnit.DEGREES);
+        // return - robotOrientation.getYaw(AngleUnit.DEGREES);
+        return 0;
     }
 
     /**
@@ -506,10 +508,11 @@ public class DriveTrain_5384_2025 {
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
         YawPitchRollAngles robotOrientation;
-        robotOrientation = imu.getRobotYawPitchRollAngles();
+        //robotOrientation = imu.getRobotYawPitchRollAngles();
         
-        double Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
-        
+        //double Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
+        double Yaw = 0;
+
         double deltaAngle = Yaw - lastHeading;
 
         if (deltaAngle < -180)
