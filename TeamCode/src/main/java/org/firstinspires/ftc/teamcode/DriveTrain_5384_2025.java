@@ -289,8 +289,7 @@ public class DriveTrain_5384_2025 {
         setTimer(maxSeconds);
 
         int targetTicks = calculateDistanceTicks(distance);
-        power_pid.setCommandLimits(min_pwr,pwr);
-        power_pid.resetSlew();
+
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + targetTicks);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() + targetTicks);
@@ -301,7 +300,7 @@ public class DriveTrain_5384_2025 {
 
 
         leftFrontStartPos = frontLeft.getCurrentPosition();
-        vel_pid.setTarget(distance);
+        setMotorPower(pwr);
     }
     
     public void setRunToPosition() {
@@ -313,7 +312,6 @@ public class DriveTrain_5384_2025 {
     
     public void slideDistance(double distance, double pwr, double maxSeconds) {
         // currentPower = 0;
-        power_pid.setCommandLimits(-pwr, pwr);
         startSliding(distance, pwr, maxSeconds);
 
         waitForDriveComplete();
@@ -326,11 +324,9 @@ public class DriveTrain_5384_2025 {
 
         int targetTicks = calculateSlideDistanceTicks(distance);
         int slideBiasTicks = calculateDistanceTicks(distance * slideBias);
-        power_pid.setCommandLimits(min_pwr,pwr);
-        power_pid.resetSlew();
+
 
         leftFrontStartPos = frontLeft.getCurrentPosition();
-        vel_pid.setTarget(TicksToDistance(targetTicks));
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + targetTicks + slideBiasTicks);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() - targetTicks + slideBiasTicks);
@@ -338,7 +334,7 @@ public class DriveTrain_5384_2025 {
         backRight.setTargetPosition(backRight.getCurrentPosition() + targetTicks + slideBiasTicks);
         setRunToPosition();
 
-      //  setMotorPower(pwr);
+        setMotorPower(pwr);
     }
 
     public void autoDriveStep(){
@@ -352,7 +348,7 @@ public class DriveTrain_5384_2025 {
         // Convert Velocity into Power
         power_pid.setTarget(Math.abs(velTarget));
         currentPower = power_pid.update(0.0);
-        setMotorPower(currentPower);
+        //setMotorPower(currentPower);
         
         telemetry(1);
         telemetry.update();
@@ -395,9 +391,7 @@ public class DriveTrain_5384_2025 {
 
         int targetTicks = calculateTurnTicks(degrees);
         leftFrontStartPos = frontLeft.getCurrentPosition();
-        vel_pid.setTarget(TicksToDistance(-targetTicks));
-        power_pid.setCommandLimits(min_pwr,pwr);
-        power_pid.resetSlew();
+
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() - targetTicks );
         frontRight.setTargetPosition(frontRight.getCurrentPosition() + targetTicks );
@@ -405,12 +399,11 @@ public class DriveTrain_5384_2025 {
         backRight.setTargetPosition(backRight.getCurrentPosition() + targetTicks );
 
         setRunToPosition();
-
+        setMotorPower(pwr);
     }
 
     public void turn(double degrees, double pwr, double maxSeconds) {
-        // currentPower = 0;
-        // power_pid.setCommandLimits(-pwr, pwr);
+
         startTurning(-degrees, pwr, maxSeconds);
 
         waitForDriveComplete();
