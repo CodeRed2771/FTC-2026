@@ -59,9 +59,9 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
 
     public void initializeRobot() {
         driveTrain = new DriveTrain_5384_2025(hardwareMap, telemetry);
-        intake = new Intake_5384_2025(hardwareMap, telemetry);
-        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
-        storage = new Storage_5384_2025(hardwareMap, telemetry);
+//        intake = new Intake_5384_2025(hardwareMap, telemetry);
+//        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
+//        storage = new Storage_5384_2025(hardwareMap, telemetry);
         camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
     }
 
@@ -80,24 +80,25 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
 
     // Assumes caller has set speed to match shooting position already.
     protected void autoShoot(){
-        double giveUpTime = 0;
-
-        giveUpTime = System.currentTimeMillis()+1000;
-        while(!shooter.atShootingSpeed() && System.currentTimeMillis() < giveUpTime ){
-            autoLoop();
-        }
-
-        giveUpTime = System.currentTimeMillis()+1000;
-        storage.ejectorLaunch();
-        while(storage.getEjector() != EjectorPosition.UP && System.currentTimeMillis() < giveUpTime){
-            autoLoop();
-        }
-
-        giveUpTime = System.currentTimeMillis()+1000;
-        storage.ejectorStow();
-        while(storage.getEjector() != EjectorPosition.DOWN && System.currentTimeMillis() < giveUpTime){
-            autoLoop();
-        }
+        ;
+//        double giveUpTime = 0;
+//
+//        giveUpTime = System.currentTimeMillis()+1000;
+//        while(!shooter.atShootingSpeed() && System.currentTimeMillis() < giveUpTime ){
+//            autoLoop();
+//        }
+//
+//        giveUpTime = System.currentTimeMillis()+1000;
+//        storage.ejectorLaunch();
+//        while(storage.getEjector() != EjectorPosition.UP && System.currentTimeMillis() < giveUpTime){
+//            autoLoop();
+//        }
+//
+//        giveUpTime = System.currentTimeMillis()+1000;
+//        storage.ejectorStow();
+//        while(storage.getEjector() != EjectorPosition.DOWN && System.currentTimeMillis() < giveUpTime){
+//            autoLoop();
+//        }
     }
     
     @Override
@@ -106,10 +107,10 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
     
     public void autoLoop(){
         camera.doLoop();
-        intake.loop();
-        shooter.loop();
-        storage.loop();
-        storage.telemetry(3);
+//        intake.loop();
+//        shooter.loop();
+//        storage.loop();
+//        storage.telemetry(3);
         telemetry.update();
     }
     
@@ -159,7 +160,7 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
             telemetry.addData("ALLIANCE", "Alliance: Undefined");
         }
 
-        storage.telemetry(3);
+//        storage.telemetry(3);
 
         telemetry.update();
     }

@@ -83,15 +83,15 @@ public class DriveTrain_5384_2025 {
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
+//        backRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+//        frontLeft.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
+//        backLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -290,6 +290,7 @@ public class DriveTrain_5384_2025 {
 
         int targetTicks = calculateDistanceTicks(distance);
 
+        leftFrontStartPos = frontLeft.getCurrentPosition();
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + targetTicks);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() + targetTicks);
@@ -297,9 +298,6 @@ public class DriveTrain_5384_2025 {
         backRight.setTargetPosition(backRight.getCurrentPosition() + targetTicks);
 
         setRunToPosition();
-
-
-        leftFrontStartPos = frontLeft.getCurrentPosition();
         setMotorPower(pwr);
     }
     
@@ -332,6 +330,7 @@ public class DriveTrain_5384_2025 {
         frontRight.setTargetPosition(frontRight.getCurrentPosition() - targetTicks + slideBiasTicks);
         backLeft.setTargetPosition(backLeft.getCurrentPosition() - targetTicks + slideBiasTicks);
         backRight.setTargetPosition(backRight.getCurrentPosition() + targetTicks + slideBiasTicks);
+
         setRunToPosition();
 
         setMotorPower(pwr);
@@ -369,12 +368,24 @@ public class DriveTrain_5384_2025 {
             }
             nextRunTime+=0.05;
         }
+        holdPosition();
     }
-    
+
+    void holdPosition(){
+
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition());
+        frontRight.setTargetPosition(frontRight.getCurrentPosition());
+        backLeft.setTargetPosition(backLeft.getCurrentPosition());
+        backRight.setTargetPosition(backRight.getCurrentPosition());
+
+        setRunToPosition();
+
+    }
+
     boolean timeExpired() {
         return runtime.seconds() >= timerSetPoint;
     }
-   public void setMotorPower(double pwr) {
+    public void setMotorPower(double pwr) {
         frontLeft.setPower(pwr * (1.0+slideSkew));
         frontRight.setPower(pwr * (1.0+slideSkew));
         backLeft.setPower(pwr * (1.0-slideSkew));

@@ -20,8 +20,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
-
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
  * in either the autonomous or the TeleOp period of an FTC match. The names of OpModes appear on
@@ -32,9 +30,9 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Auto Launch Zone Leave", group = "5384")
+@Autonomous(name = "Hive Drive Left", group = "5384")
 
-public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
+public class AutoLaunchZone5384_Left extends AutoBaseClass_5384_2025 {
 
     // Starts with robot facing the wall in the Launch Zone
     private int MAX_RUNTIME = 30;
@@ -78,37 +76,37 @@ public class AutoLaunchZone5384_Leave extends AutoBaseClass_5384_2025 {
         delay(delayedStart * 1000);
 
         // #1.  Drive forward to get Leave points
-        driveTrain.driveDistance(12.0, 1, 3);
+        driveTrain.driveDistance(12.0, .4, 3);
 
         // #2.0  Look for the Hive to be tipped how we want.
         // Wait up to X seconds leaving enough time for parking
-        delay(2000);
+        delay(20*1000);
 
         // #2 Shoot the pollen
         // 2.1 Start spinning the motors on the shooter
-        shooter.setPowerMid();
+        //shooter.setPowerMid();
 
         // 2.2 get a pollen from storage ready to go
         // storage.select();
 
         // 2.3 set the speed based on distance - May only need 1 or 2 speeds to select
-        shooter.setPowerMid();
+//        shooter.setPowerMid();
 
         // 2.4 wait until the motors are ready.
         //   - wait fixed amount of time
         //   - wait until it stops accelerating < +/- X of 0 accel
         //   - wait until motor is at speed target < +/- Y of target
         // DRY: Don't Repeat Yourself
-        delay(1000);
+//        delay(1000);
 
         // 2.5 transfer from storage to the shooter.
-        storage.ejectorLaunch();
+//        storage.ejectorLaunch();
         // Decide if we wait until motors get back up to speed or just shoot all elements
 
 
         // #3 Park in the parking zone
         // #3.1 Move right 5 ft
-        driveTrain.slideDistance(5*12.0, 1.0,10.0);
+//        driveTrain.slideDistance(5*12.0, 1.0,10.0);
         
     }
 }

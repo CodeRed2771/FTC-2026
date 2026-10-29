@@ -30,15 +30,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Auto Launch Zone Right", group = "5384")
+@Autonomous(name = "Hive Drive Right", group = "5384")
 
 public class AutoLaunchZone5384_Right extends AutoBaseClass_5384_2025 {
 
     // Starts with robot facing the wall in the Launch Zone
-    private int MAX_RUNTIME = 30;
+    private int Max_RUNTIME = 30;
     @Override
     public void runOpMode() {
-
         double delayedStart = 0.0;
         int up_deadband = 0;
         int down_deadband = 0;
@@ -47,8 +46,12 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384_2025 {
         
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
+        // Wait for the game to start (driver presses PLAY)
+        // driveTrain.setRunToPosition();
+//        storage.ejectorStow();
+        
         while (!isStarted()) {
+
             if(gamepad1.dpad_up || gamepad2.dpad_up){
                 up_deadband += 1;
             } else {
@@ -74,30 +77,36 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384_2025 {
         opModeIsActive();
 
         delay(delayedStart * 1000);
-/*
-        driveTrain.driveDistance(12.0, 1, 3);
-        driveTrain.slideDistance(12.0, 1, 3);
+  /*      driveTrain.driveDistance(12.0,1,3);
+        driveTrain.slideDistance(12.0, 1, 3 );
         shooter.setPowerMid();
   */
+
         // step 1: Move and shoot the preloaded pollen
-        // 1.1 : move forward 0.5 ft
+        // 1.1 : move forward 0.5ft
+        driveTrain.driveDistance(15.0, 0.6, 3);
 
         // 1.2 : ready the shooter (spin it up)
+        //shooter.setPowerMid();
+
         // 1.3 : look for the april tag
-        camera.doLoop(); // process an image
-        if(camera.goalFound()){
+        camera.doLoop();
+        if(camera.goalFound()) {
             double aim = camera.getAutoaim_bearing();
         }
 
 
         // 1.4 : adjust aiming (use april tag)
-        // 1.5 : If not seeing april tag, keep pollen and skip to step 2.
-        // 1.6 : Fire all pollen
+
+        // 1.5 : If not seeing april tag, keep pollen and skip to step 2
+
+        // 1.6 : Fire all pole
+
 
         // step 2: Slide over to the runway
+        driveTrain.slideDistance(-48,0.3,10);
 
-
+        driveTrain.driveDistance(7*12,0.4,10);
         // step 3: Ride the wall into the parking zone
-
     }
 }
