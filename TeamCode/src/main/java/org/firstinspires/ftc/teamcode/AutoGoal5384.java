@@ -43,9 +43,6 @@ public class AutoGoal5384 extends AutoBaseClass {
         int obeliskValue = 0;
         double giveUpTime = 0;
         boolean getSecondArtifacts = true;
-        double delayedStart = 0.0;
-        int up_deadband = 0;
-        int down_deadband = 0;
         Artifact[] fireOrder = {Artifact.UNKNOWN, Artifact.UNKNOWN, Artifact.UNKNOWN};
         
         initializeRobot();
@@ -61,27 +58,10 @@ public class AutoGoal5384 extends AutoBaseClass {
                 getSecondArtifacts = true;
             if(gamepad1.a || gamepad2.a)
                 getSecondArtifacts = false;
-                
-            if(gamepad1.dpad_up || gamepad2.dpad_up){
-                up_deadband += 1;
-            } else {
-                if (up_deadband > 0)
-                    delayedStart += 1.0;
-                up_deadband = 0;
-            }
-            if(gamepad1.dpad_down || gamepad2.dpad_down)
-            {
-                down_deadband += 1;
-            } else {
-                if (down_deadband > 0)
-                    delayedStart -= 1.0;
-                down_deadband = 0;
-            }
-            delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,15);
-            telemetry.addData("DELAY", delayedStart);
+
             telemetry.addData("SHOOT EXTRA", getSecondArtifacts);
 
+            setupAutoDelayedStart();
             setupAllianceAndPosition();
 
             idle();

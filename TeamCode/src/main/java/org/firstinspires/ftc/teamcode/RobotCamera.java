@@ -34,11 +34,13 @@ public abstract class RobotCamera {
     }
 
     public void startStream(){
-        visionPortal.resumeStreaming();
+        if (visionPortal != null)
+            visionPortal.resumeStreaming();
     }
 
     public void stopStream(){
-        visionPortal.stopStreaming();
+        if (visionPortal != null)
+            visionPortal.stopStreaming();
     }
 
     public void telemetry(int page){
@@ -108,6 +110,11 @@ public abstract class RobotCamera {
 
     @SuppressLint("DefaultLocale")
     public void telemetryAprilTag() {
+        if (visionPortal == null)
+        {
+            telemetry.addLine("CAMERA NOT DETECTED!");
+            telemetry.addLine("Check HardwareMap.");
+        }
         if (currentDetections != null) {
             telemetry.addData("# AprilTags Detected", currentDetections.size());
         

@@ -38,9 +38,6 @@ public class Hive_Drive_Right_Flower extends AutoBaseClass {
     private int Max_RUNTIME = 30;
     @Override
     public void runOpMode() {
-        double delayedStart = 0.0;
-        int up_deadband = 0;
-        int down_deadband = 0;
 
         initializeRobot();
 
@@ -52,24 +49,7 @@ public class Hive_Drive_Right_Flower extends AutoBaseClass {
 
         while (!isStarted()) {
 
-            if (gamepad1.dpad_up || gamepad2.dpad_up) {
-                up_deadband += 1;
-            } else {
-                if (up_deadband > 0)
-                    delayedStart += 1.0;
-                up_deadband = 0;
-            }
-            if (gamepad1.dpad_down || gamepad2.dpad_down) {
-                down_deadband += 1;
-            } else {
-                if (down_deadband > 0)
-                    delayedStart -= 1.0;
-                down_deadband = 0;
-            }
-            delayedStart = Math.max(delayedStart, 0);
-            delayedStart = Math.min(delayedStart, 30);
-            telemetry.addData("DELAY", delayedStart);
-
+            setupAutoDelayedStart();
             setupAllianceAndPosition();
             idle();
         }

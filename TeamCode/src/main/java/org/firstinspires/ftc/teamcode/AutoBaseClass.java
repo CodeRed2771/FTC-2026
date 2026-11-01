@@ -38,15 +38,9 @@ import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
  */
 
 public class AutoBaseClass extends LinearOpMode {
-    protected DriveTrain driveTrain;
-    protected Intake_5384_2025 intake;
-    protected Shooter_5384_2025 shooter;
-    protected Storage_5384_2025 storage;
-    protected DecodeCamera camera;
-    
+
     protected ElapsedTime runtime = new ElapsedTime();
     double timerSetPoint = 999;
-
 
     public enum Alliance {
         AMBER,
@@ -61,6 +55,8 @@ public class AutoBaseClass extends LinearOpMode {
     protected Alliance alliance;
     protected StartPosition fieldPosition;
 
+    protected double delayedStart = 0.0;
+
     public void initializeRobot() {
         driveTrain = new DriveTrain(hardwareMap, telemetry);
 //        intake = new Intake_5384_2025(hardwareMap, telemetry);
@@ -74,36 +70,13 @@ public class AutoBaseClass extends LinearOpMode {
 
         giveUpTime = System.currentTimeMillis()+milliseconds;
         while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
-
+            autoLoop();
             idle();
         }
     }
 
     // Assumes caller has set speed to match shooting position already.
-    protected void autoShoot(){
-        ;
-//        double giveUpTime = 0;
-//
-//        giveUpTime = System.currentTimeMillis()+1000;
-//        while(!shooter.atShootingSpeed() && System.currentTimeMillis() < giveUpTime ){
-//            autoLoop();
-//        }
-//
-//        giveUpTime = System.currentTimeMillis()+1000;
-//        storage.ejectorLaunch();
-//        while(storage.getEjector() != EjectorPosition.UP && System.currentTimeMillis() < giveUpTime){
-//            autoLoop();
-//        }
-//
-//        giveUpTime = System.currentTimeMillis()+1000;
-//        storage.ejectorStow();
-//        while(storage.getEjector() != EjectorPosition.DOWN && System.currentTimeMillis() < giveUpTime){
-//            autoLoop();
-//        }
-    }
+
     
     @Override
     public void runOpMode() {
@@ -143,6 +116,35 @@ public class AutoBaseClass extends LinearOpMode {
         return fieldPosition == StartPosition.RIGHT;
     }
 
+    int up_deadband = 0;
+    int down_deadband = 0;
+    public void setupAutoDelayedStart(){
+        // Use deadband variabls to detect when DPAD is pressed.
+        // ignore anything after the rising edge of the press.
+        if(gamepad1.dpad_up || gamepad2.dpad_up){
+            up_deadband += 1;
+        } else {
+            if (up_deadband > 0)
+                delayedStart += 1.0;
+            up_deadband = 0;
+        }
+        if(gamepad1.dpad_down || gamepad2.dpad_down)
+        {
+            down_deadband += 1;
+        } else {
+            if (down_deadband > 0)
+                delayedStart -= 1.0;
+            down_deadband = 0;
+        }
+
+        // Use min/max to prevent driver from getting absurd delays.
+        delayedStart = Math.max(delayedStart,0);
+        delayedStart = Math.min(delayedStart,30);
+
+        telemetry.addData("DELAY", delayedStart);
+    }
+
+
     public void setupAllianceAndPosition() {
 
         if (gamepad1.x || gamepad2.x) {
@@ -164,15 +166,6 @@ public class AutoBaseClass extends LinearOpMode {
             telemetry.addData("ALLIANCE", "Alliance: Undefined");
         }
 
-//        storage.telemetry(3);
-
         telemetry.update();
     }
-    
-    public void gyroStart() {
-        // Start the logging of measured acceleration
-        //imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
-    }
-
-  
 }
