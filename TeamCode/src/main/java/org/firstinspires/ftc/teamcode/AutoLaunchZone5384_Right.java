@@ -104,9 +104,11 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384_2025 {
 
 
         // step 2: Slide over to the runway
-        driveTrain.slideDistance(-48,0.3,10);
+        driveTrain.slideDistance(-32,0.8,10);
 
-        driveTrain.driveDistance(7*12,0.4,10);
+        driveTrain.driveDistance(5*12,1,10);
         // step 3: Ride the wall into the parking zone
+        driveTrain.slideDistance(-18, 0.8, 10);
+        driveTrain.driveDistance(12, 0.8, 10);
     }
 }

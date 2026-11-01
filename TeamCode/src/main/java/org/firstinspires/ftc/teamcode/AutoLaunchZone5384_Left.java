@@ -76,11 +76,16 @@ public class AutoLaunchZone5384_Left extends AutoBaseClass_5384_2025 {
         delay(delayedStart * 1000);
 
         // #1.  Drive forward to get Leave points
-        driveTrain.driveDistance(12.0, .4, 3);
+        driveTrain.driveDistance(8.0, .4, 3);
 
         // #2.0  Look for the Hive to be tipped how we want.
         // Wait up to X seconds leaving enough time for parking
-        delay(20*1000);
+        delay(1000);
+
+        driveTrain.slideDistance(5*12, 0.8, 10);
+        driveTrain.slideDistance(-3, 0.8, 10);
+
+        driveTrain.driveDistance(6, 0.4, 10);
 
         // #2 Shoot the pollen
         // 2.1 Start spinning the motors on the shooter
