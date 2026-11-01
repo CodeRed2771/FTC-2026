@@ -18,13 +18,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
@@ -38,7 +32,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 @Autonomous(name = "Move A Little", group = "5384")
 
-public class AutoMoveALittle5384 extends AutoBaseClass_5384_2025 {
+public class AutoMoveALittle5384 extends AutoBaseClass {
 
     @Override
     public void runOpMode() {

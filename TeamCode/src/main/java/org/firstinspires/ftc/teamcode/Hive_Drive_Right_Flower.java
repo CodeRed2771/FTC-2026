@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 @Autonomous(name = "Hive Right Flower", group = "5384")
 
-public class Hive_Drive_Right_Flower extends AutoBaseClass_5384_2025 {
+public class Hive_Drive_Right_Flower extends AutoBaseClass {
 
     // Starts with robot facing the wall in the Launch Zone
     private int Max_RUNTIME = 30;

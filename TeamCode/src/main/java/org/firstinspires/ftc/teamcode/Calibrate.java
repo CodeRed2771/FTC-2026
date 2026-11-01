@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.util.List;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name = "_Calibrate", group = "5383")
-public class Calibrate extends AutoBaseClass_5384_2025 {
+@Autonomous(name = "_Drive_Calibrate", group = "Common")
+public class Calibrate extends AutoBaseClass {
 
     // todo: write your code here
     @Override

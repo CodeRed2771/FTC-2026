@@ -21,7 +21,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
+import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Intake_5384_2025;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Shooter_5384_2025;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
+
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
  * in either the autonomous or the TeleOp period of an FTC match. The names of OpModes appear on
@@ -33,12 +37,12 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
  * added to the Driver Station.
  */
 
-public class AutoBaseClass_5384_2025 extends LinearOpMode {
-    protected DriveTrain_5384_2025 driveTrain;
+public class AutoBaseClass extends LinearOpMode {
+    protected DriveTrain driveTrain;
     protected Intake_5384_2025 intake;
     protected Shooter_5384_2025 shooter;
     protected Storage_5384_2025 storage;
-    protected DecodeGameCamera camera;
+    protected DecodeCamera camera;
     
     protected ElapsedTime runtime = new ElapsedTime();
     double timerSetPoint = 999;
@@ -58,11 +62,11 @@ public class AutoBaseClass_5384_2025 extends LinearOpMode {
     protected StartPosition fieldPosition;
 
     public void initializeRobot() {
-        driveTrain = new DriveTrain_5384_2025(hardwareMap, telemetry);
+        driveTrain = new DriveTrain(hardwareMap, telemetry);
 //        intake = new Intake_5384_2025(hardwareMap, telemetry);
 //        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
 //        storage = new Storage_5384_2025(hardwareMap, telemetry);
-        camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
+        camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
     }
 
     public void delay(double milliseconds){

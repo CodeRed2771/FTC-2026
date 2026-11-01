@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import java.util.Locale;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -17,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import com.qualcomm.robotcore.hardware.IMU;
 
 
-public class DriveTrain_5384_2025 {
+public class DriveTrain {
     private int[] fullPowerCallCounts = {0,0,0};
     private Boolean slowToggle = false;
     private DcMotor frontRight = null;     //frontleft
@@ -72,7 +71,7 @@ public class DriveTrain_5384_2025 {
     IMU imu;
     Telemetry telemetry;
 
-    public DriveTrain_5384_2025(HardwareMap hardwareMap, Telemetry _telemetry) {
+    public DriveTrain (HardwareMap hardwareMap, Telemetry _telemetry) {
         telemetry = _telemetry;
         frontRight = hardwareMap.dcMotor.get("frontRight");
         frontLeft = hardwareMap.dcMotor.get("frontLeft");

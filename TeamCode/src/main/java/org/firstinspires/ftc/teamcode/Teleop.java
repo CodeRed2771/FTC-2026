@@ -7,8 +7,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.EjectorPosition;
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
+import org.firstinspires.ftc.teamcode.Decode.Artifact;
+import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Intake_5384_2025;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Lift_5384_2025;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Shooter_5384_2025;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.EjectorPosition;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
 @TeleOp(name = "Hive Drive", group = "Iterative Opmode")
 
@@ -21,13 +27,13 @@ public class Teleop extends OpMode {
     RevBlinkinLedDriver led;
     RevBlinkinLedDriver.BlinkinPattern led_pattern;
 
-    DriveTrain_5384_2025 driveTrain;
+    DriveTrain driveTrain;
     Intake_5384_2025 intake;
     Shooter_5384_2025 shooter;
     Storage_5384_2025 storage;
-    DecodeGameCamera camera;
+    DecodeCamera camera;
     Lift_5384_2025 lift;
-    ColorSensor_5384_2025 colorSensor;
+
     boolean red_goal_found = false;
     boolean blue_goal_found = false;
     
@@ -51,16 +57,14 @@ public class Teleop extends OpMode {
         
 //        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
         
-        driveTrain = new DriveTrain_5384_2025(hardwareMap, telemetry);
+        driveTrain = new DriveTrain(hardwareMap, telemetry);
 //        intake = new Intake_5384_2025(hardwareMap, telemetry);
 //        storage = new Storage_5384_2025(hardwareMap, telemetry);
 //        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
 //        if (!DISABLE_LIFT) {
 //            lift = new Lift_5384_2025(hardwareMap, telemetry);
 //        }
-        camera = new DecodeGameCamera(hardwareMap, telemetry,"Webcam 1");
-        
-        //colorSensor = new ColorSensor_5384_2025(camera, telemetry);
+        camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

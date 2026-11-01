@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Decode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RobotCamera;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
-public class DecodeGameCamera extends RobotCamera {
+public class DecodeCamera extends RobotCamera {
     private final int red_id = 24;
     private final int blue_id = 20;
     private int obelisk_id = 0;
@@ -15,7 +16,7 @@ public class DecodeGameCamera extends RobotCamera {
     private double autoaim_bearing = 0.0;
 
 
-    public DecodeGameCamera(HardwareMap hardwareMap, Telemetry telemetry, String deviceName) {
+    public DecodeCamera (HardwareMap hardwareMap, Telemetry telemetry, String deviceName) {
         super(hardwareMap, telemetry, deviceName);
     }
 

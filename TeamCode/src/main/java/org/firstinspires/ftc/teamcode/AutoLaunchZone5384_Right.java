@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 @Autonomous(name = "Hive Drive Right", group = "5384")
 
-public class AutoLaunchZone5384_Right extends AutoBaseClass_5384_2025 {
+public class AutoLaunchZone5384_Right extends AutoBaseClass {
 
     // Starts with robot facing the wall in the Launch Zone
     private int Max_RUNTIME = 30;

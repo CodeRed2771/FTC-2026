@@ -20,7 +20,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
+import org.firstinspires.ftc.teamcode.Decode.Artifact;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
@@ -34,7 +35,7 @@ import org.firstinspires.ftc.teamcode.Storage_5384_2025.WiperPosition;
  */
 @Autonomous(name = "Auto Launch Zone", group = "5384")
 
-public class AutoLaunchZone5384 extends AutoBaseClass_5384_2025 {
+public class AutoLaunchZone5384 extends AutoBaseClass {
 
     // Starts with robot facing the wall in the Launch Zone
 
