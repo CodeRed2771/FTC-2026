@@ -78,11 +78,11 @@ public class DriveTrain {
         backRight = hardwareMap.dcMotor.get("backRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
 
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+    //    frontRight.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -101,10 +101,10 @@ public class DriveTrain {
                 )
             );
             
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(parameters);
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        imu.initialize(parameters);
         
-        resetGyro();
+       // resetGyro();
  
         vel_pid = new PIDController();
         vel_pid.setP( 1.0 / 36.0); // 100% if target 12 inches away
@@ -192,7 +192,7 @@ public class DriveTrain {
     public void runDrive_fieldCentric(Gamepad gp, double forward, double slide, double turn){
         double new_forward = forward;
         double new_slide = slide;
-        angles = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);        
+        angles = new Orientation();//imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
         rot_angle = -(angles.firstAngle-init_angle);
         boolean reset_init_angle = gp.b;
         
@@ -484,7 +484,7 @@ public class DriveTrain {
      * Resets the cumulative angle tracking to zero.
      */
     public void resetGyro() {
-        imu.resetYaw();
+       // imu.resetYaw();
         lastHeading = getHeadingSingleRotation();
 
         globalAngle = 0;
@@ -509,8 +509,8 @@ public class DriveTrain {
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
         YawPitchRollAngles robotOrientation;
-        robotOrientation = imu.getRobotYawPitchRollAngles();
-        
+        //robotOrientation = imu.getRobotYawPitchRollAngles();
+        robotOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0,0.0,0.0,0);
         double Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
         
         double deltaAngle = Yaw - lastHeading;
