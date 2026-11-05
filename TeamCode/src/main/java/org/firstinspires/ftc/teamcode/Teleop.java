@@ -7,11 +7,13 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5384;
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
 import org.firstinspires.ftc.teamcode.Decode.Artifact;
 import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Intake_5384_2025;
+
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Lift_5384_2025;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Shooter_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.EjectorPosition;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
@@ -28,8 +30,9 @@ public class Teleop extends OpMode {
     RevBlinkinLedDriver.BlinkinPattern led_pattern;
 
     DriveTrain driveTrain;
-    Intake_5384_2025 intake;
-    Shooter_5384_2025 shooter;
+    Biobuzz_Intake_5384 intake;
+    Biobuzz_Flower_5384 flower;
+    Biobuzz_Shooter_5384 shooter;
     Storage_5384_2025 storage;
     DecodeCamera camera;
     Lift_5384_2025 lift;
@@ -58,9 +61,10 @@ public class Teleop extends OpMode {
 //        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
         
         driveTrain = new DriveTrain(hardwareMap, telemetry);
-//        intake = new Intake_5384_2025(hardwareMap, telemetry);
+        intake = new Biobuzz_Intake_5384(hardwareMap, telemetry);
+        flower = new Biobuzz_Flower_5384(hardwareMap,telemetry);
 //        storage = new Storage_5384_2025(hardwareMap, telemetry);
-//        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
+        shooter = new Biobuzz_Shooter_5384(hardwareMap, telemetry);
 //        if (!DISABLE_LIFT) {
 //            lift = new Lift_5384_2025(hardwareMap, telemetry);
 //        }
@@ -76,86 +80,44 @@ public class Teleop extends OpMode {
 //        doCamera();
 
         doDrive();
-//        doShooter();
-//        doIntake();
+        doShooter();
+        doIntake();
 //        doStorage();
 //        doLift();
 
         camera.doLoop();
         driveTrain.loop();
-//        intake.loop();
-//        shooter.loop();
+        intake.loop();
+        flower.loop();
+        shooter.loop();
 //        storage.loop();
         
-//        doTelemetry();
+        doTelemetry();
     }
     
     boolean back_prev = false;
     int page = 0;
     private void doTelemetry(){
-        boolean back = (gamepad1.back || gamepad2.back);
-        if(!back_prev && back)
-            page = (page + 1) % 10;
-        back_prev = back;
-        
+        boolean next_page = (gamepad1.backWasPressed() || gamepad2.backWasPressed());
+        if(next_page)
+            page = (page + 1) % 5;
+
         telemetry.addData("Page", page);
         switch(page){
             case 1:
                 driveTrain.telemetry(page - 1);
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-                }
+
                 break;
             case 2:
                 intake.telemetry(page - 2);
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-                }
                 break;
             case 3:
-                shooter.telemetry(page - 3);
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
-                }
+                flower.telemetry(page - 3);
                 break;
             case 4:
-                if (lift != null) {
-                    lift.telemetry(page - 4);
-                    if (LED_TROUBLESHOOTING) {
-                        led.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_OCEAN_PALETTE);
-                    }
-                } else {
-                    telemetry.addData("Lift Disabled", true);
-                }
-                break;
-            case 5:
-            case 6:
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-                }
-                storage.telemetry(page - 5);
-                break;
-            case 7:
-            case 8:
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-                }
-                camera.telemetry(page - 7);
-                break; 
-            case 9:
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
-                }
-                telemetry.addData("Red Found", red_goal_found);
-                telemetry.addData("Blue Found", blue_goal_found);
-                telemetry.addData("Autoaim", autoaim);
-                telemetry.addData("autoaim_distance", autoaim_distance);
-                telemetry.addData("autoaim_bearing", autoaim_bearing);
+                shooter.telemetry(page - 4);
                 break;
             default:
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
-                }
                 break;
         }
         
@@ -207,90 +169,37 @@ public class Teleop extends OpMode {
     
     private boolean wasShooting = false;
     private void doShooter() {
-        double aim_command = autoAim_kP * autoaim_bearing;
-    
-        if (gamepad2.left_trigger > .5) {
-            autoaim = true;
 
-            if (aim_command >= autoAim_limit) {
-                aim_command = autoAim_limit;
-            } else if (aim_command <= -autoAim_limit) {
-                aim_command = -autoAim_limit;
-            } else {
-                aim_command = aim_command;
-            }
-            steerToTag = aim_command;
-
-        }
-        else
-            steerToTag = 0.0;
-
-        if (gamepad2.dpad_up) {
+        if (gamepad1.dpad_up) {
             autoaim = false;
-            shooter.setPowerFar();
+            shooter.setPowerHive();
         }
-        else if (gamepad2.dpad_left || gamepad2.dpad_right) {
+        else if (gamepad1.dpad_left || gamepad1.dpad_right) {
             autoaim = false;
-            shooter.setPowerMid();
+            shooter.stop();
         }
-        else if (gamepad2.dpad_down) {
+        else if (gamepad1.dpad_down) {
             autoaim = false;
-            shooter.setPowerNear();
+            shooter.setPowerEject();
         }
         
         if (autoaim)
         {
-            shooter.setShooterDistance(autoaim_distance);
+            shooter.setPowerHive();
         }
-    
-        if (false) {
-            // Continuous Shot Mode
-            if (gamepad2.right_trigger > .5) {
-                EjectorPosition ejectorPosition = storage.getEjector();
-                // If we've finished shooting, prepare to shoot again.
-                if (wasShooting && (ejectorPosition == EjectorPosition.UP)) {
-                    storage.ejectorStow();
-                    wasShooting = false;
-                    storage.select(Artifact.UNKNOWN);
-                }
-                // Check to see if we are ready to shoot again.
-                if (!wasShooting
-                    // && storage.getStoredArtifactCount() > 0
-                    // && shooter.readyToShoot()
-                    // && shooter.atShootingSpeed()
-                    && ejectorPosition == EjectorPosition.DOWN) {
-                    wasShooting = true;
-                    storage.ejectorLaunch();
-                }
-            }
-        } else {
-            // Single Shot mode
-            if (gamepad2.right_trigger > .5) {
 
-                shooter.setShooterSpeed(5000.0);
-
-                wasShooting = true;
-                storage.ejectorLaunch();
-            }
-            else if (wasShooting && (storage.getEjector() == EjectorPosition.UP))
-            {
-                storage.ejectorStow();
-                wasShooting = false;
-            }
-        }
         
-        if(gamepad2.right_bumper)
+        if(gamepad1.right_bumper)
         {
             autoaim = false;
             shooter.setShooterSpeed(0.0);
         }
     }
-    
+
+    private boolean was_pressed = false;
     private void doIntake() {
         if (gamepad1.a) {
             intake.startIntake();
-            shooter.stop();
-            storage.ejectorStow();
 
         }
         else if (gamepad1.x)  {
@@ -298,6 +207,16 @@ public class Teleop extends OpMode {
         }
         if (gamepad1.y){
             intake.ejectIntake();
+        }
+
+        if (gamepad1.bWasPressed()){
+            was_pressed = true;
+            if (flower.getMode() == Biobuzz_Flower_5384.DeployMode.DEPLOY)
+                flower.stow();
+            else
+                flower.deploy();
+        } else {
+            was_pressed = false;
         }
     }
     
