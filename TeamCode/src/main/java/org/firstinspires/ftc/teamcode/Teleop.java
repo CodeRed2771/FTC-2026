@@ -105,17 +105,19 @@ public class Teleop extends OpMode {
         telemetry.addData("Page", page);
         switch(page){
             case 1:
+            case 2:
+            case 3:
                 driveTrain.telemetry(page - 1);
 
                 break;
-            case 2:
-                intake.telemetry(page - 2);
+            case 5:
+                intake.telemetry(page - 5);
                 break;
-            case 3:
-                flower.telemetry(page - 3);
+            case 7:
+                flower.telemetry(page - 7);
                 break;
-            case 4:
-                shooter.telemetry(page - 4);
+            case 8:
+                shooter.telemetry(page - 8);
                 break;
             default:
                 break;

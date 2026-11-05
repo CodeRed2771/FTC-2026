@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -24,6 +28,8 @@ public class DriveTrain {
     private DcMotor backRight = null;   //backright
     private DcMotor backLeft = null;    //backleft
 
+    GoBildaPinpointDriver pinpoint;
+
     double driveTicksPerInch = 50.6 * 24.0 / 36.8 * 24.0 / 23.0; 
     double slideTicksPerInch = 61.6 * 24.0 / 34.0 * 24.0 / 25.0;
     double turnTicksPerDegree = 13.55 * 180.0 / 270.0 * 180.0 / 200.0 * 180.0 / 181.5;
@@ -32,6 +38,7 @@ public class DriveTrain {
 
     double globalAngle;
     double lastHeading;
+    Pose2D currentPose = new Pose2D(DistanceUnit.INCH,0,0,AngleUnit.DEGREES,0);
     
     double drivePriority = 65.0;
     
@@ -100,7 +107,9 @@ public class DriveTrain {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
                 )
             );
-            
+
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        configurePinpoint();
 //        imu = hardwareMap.get(IMU.class, "imu");
 //        imu.initialize(parameters);
         
@@ -116,10 +125,61 @@ public class DriveTrain {
         power_pid.setFF(1.0/1.0); // 1.0 Power for 100% pwr
 
     }
-    
+
+    public void setCurrentPosition(double x, double y, double heading)
+    {
+        // Set the location of the robot - this should be the place you are starting the robot from
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, heading));
+    }
+
+    public void configurePinpoint(){
+        /*
+         *  Set the odometry pod positions relative to the point that you want the position to be measured from.
+         *
+         *  The X pod offset refers to how far sideways from the tracking point the X (forward) odometry pod is.
+         *  Left of the center is a positive number, right of center is a negative number.
+         *
+         *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
+         *  Forward of center is a positive number, backwards is a negative number.
+         */
+        pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+
+        /*
+         * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
+         * the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.
+         * If you're using another kind of odometry pod, uncomment setEncoderResolution and input the
+         * number of ticks per unit of your odometry pod.  For example:
+         *     pinpoint.setEncoderResolution(13.26291192, DistanceUnit.MM);
+         */
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+
+        /*
+         * Set the direction that each of the two odometry pods count. The X (forward) pod should
+         * increase when you move the robot forward. And the Y (strafe) pod should increase when
+         * you move the robot to the left.
+         */
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+                GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        /*
+         * Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
+         * The IMU will automatically calibrate when first powered on, but recalibrating before running
+         * the robot is a good idea to ensure that the calibration is "good".
+         * resetPosAndIMU will reset the position to 0,0,0 and also recalibrate the IMU.
+         * This is recommended before you run your autonomous, as a bad initial calibration can cause
+         * an incorrect starting value for x, y, and heading.
+         */
+        pinpoint.resetPosAndIMU();
+    }
+
     public void telemetry(int page){
         switch(page)
         {
+            case 0:
+                telemetry.addData("X (IN)", currentPose.getX(DistanceUnit.INCH));
+                telemetry.addData("Y (IN)", currentPose.getY(DistanceUnit.INCH));
+                telemetry.addData("Heading (DEGREES)", currentPose.getHeading(AngleUnit.DEGREES));
+                break;
             case 1:
                 telemetry.addData("Target", vel_pid.getTarget());
                 telemetry.addData("Vel Cmd", vel_pid.getCommand());
@@ -159,7 +219,8 @@ public class DriveTrain {
    
    public void loop()
    {
-       ; // do nothing
+       pinpoint.update();
+       currentPose = pinpoint.getPosition();
    }
 
    private double powerLevel = 0.8;
