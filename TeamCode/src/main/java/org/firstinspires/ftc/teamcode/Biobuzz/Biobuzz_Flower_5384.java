@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.Biobuzz;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Biobuzz_Flower_5384 {
-    private final DcMotor _deploy_motor;
+    private final DcMotorEx _deploy_motor;
     private final Telemetry _telemetry;
 
     private final DigitalChannel _deploy_limit_switch_1;
@@ -16,7 +19,7 @@ public class Biobuzz_Flower_5384 {
 
     private final int init_position = 122;
 
-    private final double deploy_power = 0.5;
+    private final double deploy_power = 1.0;
 
     public enum DeployMode {
         DEPLOY(0),
@@ -40,15 +43,27 @@ public class Biobuzz_Flower_5384 {
 
     public Biobuzz_Flower_5384 (HardwareMap hardwareMap, Telemetry telemetry) {
         _telemetry = telemetry;
-        _deploy_motor = hardwareMap.dcMotor.get("deploy");
+        _deploy_motor = hardwareMap.get(DcMotorEx.class, "deploy");
         _deploy_limit_switch_1 = hardwareMap.tryGet(DigitalChannel.class, "deploy_limit1");
         _deploy_limit_switch_2 = hardwareMap.tryGet(DigitalChannel.class, "deploy_limit2");
 
         _deploy_limit_switch_1.setMode(DigitalChannel.Mode.INPUT);
         _deploy_limit_switch_2.setMode(DigitalChannel.Mode.INPUT);
         init();
-    }
 
+        PIDFCoefficients coefficients = _deploy_motor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        coefficients.p = coefficients.p * 1;
+        coefficients.i = coefficients.i * 1;
+        coefficients.d = coefficients.d * 1;
+        coefficients.f = coefficients.f * 1;
+        _deploy_motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coefficients);
+
+        _deploy_motor.setPositionPIDFCoefficients(5.0);
+
+
+
+
+    }
     public void init(){
         deploy_position = _deploy_motor.getCurrentPosition() - init_position;
     }
@@ -97,8 +112,23 @@ public class Biobuzz_Flower_5384 {
     }
 
     public void telemetry(int page){
+        PIDFCoefficients coefficients;
         switch(page)
         {
+            case 0:
+                coefficients = _deploy_motor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+                _telemetry.addData("Vel P", coefficients.p);
+                _telemetry.addData("Vel I", coefficients.i);
+                _telemetry.addData("Vel D", coefficients.d);
+                _telemetry.addData("Vel F", coefficients.f);
+                break;
+            case 1:
+                coefficients = _deploy_motor.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+                _telemetry.addData("Pos P", coefficients.p);
+                _telemetry.addData("Pos I", coefficients.i);
+                _telemetry.addData("Pos D", coefficients.d);
+                _telemetry.addData("Pos F", coefficients.f);
+                break;
             default:
                 _telemetry.addData("Deploy",mode.toString());
                 _telemetry.addData("Deploy Pos",_deploy_motor.getCurrentPosition());

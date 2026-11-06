@@ -100,7 +100,7 @@ public class Teleop extends OpMode {
     private void doTelemetry(){
         boolean next_page = (gamepad1.backWasPressed() || gamepad2.backWasPressed());
         if(next_page)
-            page = (page + 1) % 5;
+            page = (page + 1) % 10;
 
         telemetry.addData("Page", page);
         switch(page){
@@ -114,10 +114,12 @@ public class Teleop extends OpMode {
                 intake.telemetry(page - 5);
                 break;
             case 7:
+            case 8:
+            case 9:
                 flower.telemetry(page - 7);
                 break;
-            case 8:
-                shooter.telemetry(page - 8);
+            case 10:
+                shooter.telemetry(page - 10);
                 break;
             default:
                 break;
