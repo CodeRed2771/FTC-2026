@@ -254,8 +254,8 @@ public class DriveTrain {
         double new_forward = forward;
         double new_slide = slide;
         angles = new Orientation();//imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-        rot_angle = -(angles.firstAngle-init_angle);
-        boolean reset_init_angle = gp.b;
+        rot_angle = -(currentPose.getHeading(AngleUnit.RADIANS)-init_angle);
+        boolean reset_init_angle = gp.back;
         
         speedAdjust(gp);
         
@@ -273,7 +273,7 @@ public class DriveTrain {
             fcSelectHigh = 0;
         }
         
-        if (reset_init_angle) init_angle = angles.firstAngle;
+        if (reset_init_angle) init_angle = currentPose.getHeading(AngleUnit.RADIANS);
 
         if(fieldCentricEnabled){
             new_forward = forward * Math.cos(rot_angle) - slide * Math.sin(rot_angle);

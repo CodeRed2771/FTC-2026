@@ -191,11 +191,8 @@ public class Teleop extends OpMode {
         }
 
         
-        if(gamepad1.right_bumper)
-        {
-            autoaim = false;
-            shooter.setShooterSpeed(0.0);
-        }
+
+
     }
 
     private boolean was_pressed = false;
