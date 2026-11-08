@@ -20,16 +20,16 @@ public class Biobuzz_Flower_5384 {
     private final double DEPLOY_TOLERANCE = 5;
     private final double MAX_DEPLOY_MOTOR_VEL = 1800;
 
-    private DeployMode _current_mode = DeployMode.STOW;
+    private Defaults _current_mode = Defaults.STOW;
 
-    public enum DeployMode {
+    public enum Defaults {
         DEPLOY_LIMIT(-5),
         DEPLOY(0),
         STOW(115),
         STOW_LIMIT(122);
 
         private final int val;
-        DeployMode(int new_value)
+        Defaults (int new_value)
         {
             val = new_value;
         }
@@ -60,27 +60,27 @@ public class Biobuzz_Flower_5384 {
         _deploy_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if ( atDeployLimit() ) {
-            _current_mode = DeployMode.DEPLOY;
-            setPosition(DeployMode.DEPLOY.value());
+            _current_mode = Defaults.DEPLOY;
+            setPosition(Defaults.DEPLOY.value());
         } else {
-            _current_mode = DeployMode.STOW;
-            setPosition(DeployMode.STOW_LIMIT.value());
+            _current_mode = Defaults.STOW;
+            setPosition(Defaults.STOW_LIMIT.value());
         }
     }
 
     public void deploy(){
-        set(DeployMode.DEPLOY);
+        set(Defaults.DEPLOY);
     }
 
     public void stow(){
-        set(DeployMode.STOW);
+        set(Defaults.STOW);
     }
 
-    public DeployMode getMode() {
+    public Defaults getMode() {
         return _current_mode;
     }
 
-    public void set(DeployMode new_mode){
+    public void set(Defaults new_mode){
         _current_mode = new_mode;
         set(_current_mode.value());
     }
@@ -88,8 +88,8 @@ public class Biobuzz_Flower_5384 {
     public void set(int target){
         int limited_target = target;
         // Ensure target won't crash motors
-        limited_target = Math.min(limited_target,DeployMode.STOW_LIMIT.value());
-        limited_target = Math.max(limited_target,DeployMode.DEPLOY_LIMIT.value());
+        limited_target = Math.min(limited_target, Defaults.STOW_LIMIT.value());
+        limited_target = Math.max(limited_target, Defaults.DEPLOY_LIMIT.value());
 
         // Drive the motor to the target position
         _deploy_motor.setTargetPosition(posToTicks(limited_target));
@@ -112,8 +112,8 @@ public class Biobuzz_Flower_5384 {
     private void setPosition(int position){
         int raw_pos = _deploy_motor.getCurrentPosition();
 
-        position = Math.max(position,DeployMode.DEPLOY_LIMIT.value());
-        position = Math.min(position,DeployMode.STOW_LIMIT.value());
+        position = Math.max(position, Defaults.DEPLOY_LIMIT.value());
+        position = Math.min(position, Defaults.STOW_LIMIT.value());
 
         zero_position_offset = -position + raw_pos;
     }
@@ -126,11 +126,11 @@ public class Biobuzz_Flower_5384 {
     }
 
     public boolean isStowed() {
-        return _current_mode == DeployMode.STOW && atTargetPosition();
+        return _current_mode == Defaults.STOW && atTargetPosition();
     }
 
     public boolean isDeployed() {
-        return _current_mode == DeployMode.DEPLOY && atTargetPosition();
+        return _current_mode == Defaults.DEPLOY && atTargetPosition();
     }
 
     public boolean atDeployLimit (){
@@ -149,7 +149,7 @@ public class Biobuzz_Flower_5384 {
     public void loop(){
 
         if ( atDeployLimit() ) {
-            setPosition(DeployMode.DEPLOY.value());
+            setPosition(Defaults.DEPLOY.value());
         }
 
         if (! atTargetPosition()) {
@@ -161,7 +161,7 @@ public class Biobuzz_Flower_5384 {
         PIDFCoefficients coefficients;
         switch(page)
         {
-            case 0:
+            case 1:
                 _telemetry.addLine("Flower Velocity Tuning");
                 coefficients = _deploy_motor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
                 _telemetry.addData("Vel P", coefficients.p);
@@ -171,7 +171,7 @@ public class Biobuzz_Flower_5384 {
                 _telemetry.addData("Power",_deploy_motor.getPower());
                 _telemetry.addData("Overall", _vel_gain);
                 break;
-            case 1:
+            case 2:
                 _telemetry.addLine("Flower Position Tuning");
                 coefficients = _deploy_motor.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
                 _telemetry.addData("Pos P", coefficients.p);

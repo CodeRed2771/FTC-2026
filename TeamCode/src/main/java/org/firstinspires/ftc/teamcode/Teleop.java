@@ -7,15 +7,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5384;
-import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
 import org.firstinspires.ftc.teamcode.Decode.Artifact;
 import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
 
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Lift_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.EjectorPosition;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
 @TeleOp(name = "Hive Drive", group = "Iterative Opmode")
@@ -184,7 +183,7 @@ public class Teleop extends OpMode {
         }
         else if (gamepad1.dpad_down) {
             autoaim = false;
-            shooter.setPowerEject();
+            shooter.eject();
         }
         
         if (autoaim)
@@ -212,7 +211,7 @@ public class Teleop extends OpMode {
 
         if (gamepad1.bWasPressed()){
             was_pressed = true;
-            if (flower.getMode() == Biobuzz_Flower_5384.DeployMode.DEPLOY)
+            if (flower.getMode() == Biobuzz_Flower_5384.Defaults.DEPLOY)
                 flower.stow();
             else
                 flower.deploy();
