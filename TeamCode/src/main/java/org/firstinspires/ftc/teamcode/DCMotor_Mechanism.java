@@ -32,7 +32,7 @@ public class DCMotor_Mechanism {
 
     private final DcMotorEx[] _motors;
     private final DCMotor_Config _config;
-    private final double _ticksPerRev;
+    private double _ticksPerRev;
     private double _posPerRev = 1.0;
     private final double[] _last_cmd;
     private double _power_level;
@@ -75,6 +75,9 @@ public class DCMotor_Mechanism {
         }
     }
 
+    public String getName(){
+        return _config.name;
+    }
     public void loop () {
         applyMixedCmd();
     }
@@ -137,6 +140,7 @@ public class DCMotor_Mechanism {
     }
 
     /************** Motor Speed Control Functions ***************/
+    double _gear_ratio = 1.0;
     public void stopSpeed () { setSpeed(0.0); }
 
     public void setSpeed (double speed) {
@@ -145,7 +149,7 @@ public class DCMotor_Mechanism {
     }
 
     public double getSpeed(){
-        return ticksPerSecToRpm(_motors[0].getVelocity());
+        return ticksToRev(_motors[0].getVelocity());
     }
 
     public boolean atTargetSpeed () { return atTargetSpeed(_speed_tolerance); }
@@ -163,13 +167,15 @@ public class DCMotor_Mechanism {
         if (cmd.length != _motors.length) return;
 
         for (int i = 0; i < _motors.length; i++) {
-            _motors[i].setVelocity(rpmToTicksPerSec(cmd[i]));
+            _motors[i].setVelocity(revToTicks(cmd[i]));
         }
     }
 
-    private double rpmToTicksPerSec (double rpm) { return (rpm * _ticksPerRev) / 60.0; }
-
-    private double ticksPerSecToRpm (double tps) { return (tps * 60.0) / _ticksPerRev; }
+    // The gear ratio is how much the mechanism is geared from the motor.
+    // 20:1 means that 20 revolutions of the motor are needed for 1 revolution of the mechanism.
+    public void setGearRatio (double ratio) { _gear_ratio = ratio; }
+    private int revToTicks (double revolutions) { return (int) (revolutions * _ticksPerRev * _gear_ratio); }
+    private double ticksToRev (double ticks) { return (ticks / _ticksPerRev) / _gear_ratio; }
 
     public double get_speed_tolerance () { return _speed_tolerance; }
 
@@ -188,6 +194,7 @@ public class DCMotor_Mechanism {
     }
 
     /********** Motor Position Control Functions ***************/
+    double zero_position_offset = 0;
     public void gotoPosition (double position) {
         setUniformCmd(position);
         setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -205,13 +212,15 @@ public class DCMotor_Mechanism {
         }
     }
 
-    private double ticksToPosition (int ticks) { return ticks / _ticksPerRev * _posPerRev; }
+    public void setUnitPerRev (double unit_per_rev) { _posPerRev = unit_per_rev; }
+    private double ticksToPosition (int ticks) { return ticksToRev(ticks) * _posPerRev + zero_position_offset; }
+    private int positionToTicks (double position) { return revToTicks((position - zero_position_offset) / _posPerRev); }
 
-    private int positionToTicks (double position) { return (int) (position / _posPerRev * _ticksPerRev); }
+    public void setCurrentPosition (double position) {
+        zero_position_offset = 0.0;
 
-    public void setUnitPerRev (double unit_per_rev) {
-        if (unit_per_rev <= 0) return;
-        _posPerRev = unit_per_rev;
+        double raw_pos = ticksToPosition(_motors[0].getCurrentPosition());
+        zero_position_offset = position - raw_pos;
     }
 
     public boolean atTargetPosition () { return atTargetPosition(_position_tolerance); }
