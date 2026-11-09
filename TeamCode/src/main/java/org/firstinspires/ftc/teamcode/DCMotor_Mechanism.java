@@ -30,12 +30,11 @@ public class DCMotor_Mechanism {
         }
     }
 
-    protected final Telemetry _telemetry;
     private final DcMotorEx[] _motors;
     private final DCMotor_Config _config;
     private final double _ticksPerRev;
     private double _posPerRev = 1.0;
-    private double[] _last_cmd;
+    private final double[] _last_cmd;
     private double _power_level;
     private DcMotor.RunMode _run_mode;
     private double _speed_tolerance = 1.0;
@@ -45,8 +44,7 @@ public class DCMotor_Mechanism {
     private double _pos_gain = 1.0;
 
     /***************  Creation, Initialization, and Configuration ****************/
-    public DCMotor_Mechanism (DCMotor_Config config, HardwareMap map, Telemetry telemetry) {
-        _telemetry = telemetry;
+    public DCMotor_Mechanism (DCMotor_Config config, HardwareMap map) {
         _config = config;
 
         _motors = new DcMotorEx[_config.motor_names.length];
@@ -81,12 +79,9 @@ public class DCMotor_Mechanism {
         applyMixedCmd();
     }
 
-    protected void clearCmd () {
-        setUniformCmd(0.0);
-    }
+    protected void clearCmd () { setUniformCmd(0.0); }
 
     protected void setUniformCmd (double val) {
-
         for (int i = 0; i < _motors.length; i++) {
             _last_cmd[i] = val;
         }
@@ -142,9 +137,7 @@ public class DCMotor_Mechanism {
     }
 
     /************** Motor Speed Control Functions ***************/
-    public void stopSpeed () {
-        setSpeed(0.0);
-    }
+    public void stopSpeed () { setSpeed(0.0); }
 
     public void setSpeed (double speed) {
         setUniformCmd(speed);
@@ -155,9 +148,7 @@ public class DCMotor_Mechanism {
         return ticksPerSecToRpm(_motors[0].getVelocity());
     }
 
-    public boolean atTargetSpeed () {
-        return atTargetSpeed(_speed_tolerance);
-    }
+    public boolean atTargetSpeed () { return atTargetSpeed(_speed_tolerance); }
 
     public boolean atTargetSpeed (double tolerance) {
         if (_run_mode != DcMotor.RunMode.RUN_USING_ENCODER) return false;
@@ -176,17 +167,11 @@ public class DCMotor_Mechanism {
         }
     }
 
-    private double rpmToTicksPerSec (double rpm) {
-        return (rpm * _ticksPerRev) / 60.0;
-    }
+    private double rpmToTicksPerSec (double rpm) { return (rpm * _ticksPerRev) / 60.0; }
 
-    private double ticksPerSecToRpm (double tps) {
-        return (tps * 60.0) / _ticksPerRev;
-    }
+    private double ticksPerSecToRpm (double tps) { return (tps * 60.0) / _ticksPerRev; }
 
-    public double get_speed_tolerance () {
-        return _speed_tolerance;
-    }
+    public double get_speed_tolerance () { return _speed_tolerance; }
 
     public void set_speed_tolerance (double tolerance) {
         if (tolerance <= 0) return;
@@ -220,22 +205,16 @@ public class DCMotor_Mechanism {
         }
     }
 
-    private double ticksToPosition (int ticks) {
-        return ticks / _ticksPerRev * _posPerRev;
-    }
+    private double ticksToPosition (int ticks) { return ticks / _ticksPerRev * _posPerRev; }
 
-    private int positionToTicks (double position) {
-        return (int) (position / _posPerRev * _ticksPerRev);
-    }
+    private int positionToTicks (double position) { return (int) (position / _posPerRev * _ticksPerRev); }
 
     public void setUnitPerRev (double unit_per_rev) {
         if (unit_per_rev <= 0) return;
         _posPerRev = unit_per_rev;
     }
 
-    public boolean atTargetPosition () {
-        return atTargetPosition(_position_tolerance);
-    }
+    public boolean atTargetPosition () { return atTargetPosition(_position_tolerance); }
 
     public boolean atTargetPosition (double tolerance) {
         double cur_pos = getPosition();
@@ -244,9 +223,7 @@ public class DCMotor_Mechanism {
         return Math.abs(error) < tolerance;
     }
 
-    public double get_position_tolerance () {
-        return _position_tolerance;
-    }
+    public double get_position_tolerance () { return _position_tolerance; }
 
     public void set_position_tolerance (double tolerance) {
         if (tolerance <= 0) return;
@@ -262,67 +239,61 @@ public class DCMotor_Mechanism {
     }
 
     /********** Telemetry Handling functions ***************/
-    public void telemetry (int page) {
+    public void registerPages(PageDisplay display){
+        display.addPage(_config.name, "Motor Config", 1, this::telemetry);
+        display.addPage(_config.name, "Vel Tuning", 2, this::telemetry);
+        display.addPage(_config.name, "Pos Tuning", 3, this::telemetry);
+        display.addPage(_config.name, "Motor Cmds", 4, this::telemetry);
+    }
+
+    public void telemetry (Telemetry telemetry, int page) {
         PIDFCoefficients coefficients;
         switch (page) {
             case 1:
-                printPageTitle(page, "Motor Config");
-                _telemetry.addData("Ticks Per Rev", _ticksPerRev);
-                _telemetry.addData("Unit per Rev", _posPerRev);
-                _telemetry.addData("Max Ticks Per Sec", _config.MAX_MOTOR_TICKS_PER_SEC);
+                telemetry.addData("Ticks Per Rev", _ticksPerRev);
+                telemetry.addData("Unit per Rev", _posPerRev);
+                telemetry.addData("Max Ticks Per Sec", _config.MAX_MOTOR_TICKS_PER_SEC);
                 for (int i = 0; i < _config.motor_names.length; i++) {
-                    _telemetry.addData(_config.motor_names[i], _config.direction[i].toString());
+                    telemetry.addData(_config.motor_names[i], _config.direction[i].toString());
                 }
                 break;
             case 2:
-                printPageTitle(page,"Vel Tuning");
                 coefficients = _motors[0].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-                _telemetry.addData("Vel P", coefficients.p);
-                _telemetry.addData("Vel I", coefficients.i);
-                _telemetry.addData("Vel D", coefficients.d);
-                _telemetry.addData("Vel F", coefficients.f);
-                _telemetry.addData("Power", _motors[0].getPower());
-                _telemetry.addData("Overall", _vel_gain);
+                telemetry.addData("Vel P", coefficients.p);
+                telemetry.addData("Vel I", coefficients.i);
+                telemetry.addData("Vel D", coefficients.d);
+                telemetry.addData("Vel F", coefficients.f);
+                telemetry.addData("Power", _motors[0].getPower());
+                telemetry.addData("Overall", _vel_gain);
                 break;
             case 3:
-                printPageTitle(page, "Pos Tuning");
                 coefficients = _motors[0].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
-                _telemetry.addData("Pos P", coefficients.p);
-                _telemetry.addData("Pos I", coefficients.i);
-                _telemetry.addData("Pos D", coefficients.d);
-                _telemetry.addData("Pos F", coefficients.f);
-                _telemetry.addData("Overall", _pos_gain);
+                telemetry.addData("Pos P", coefficients.p);
+                telemetry.addData("Pos I", coefficients.i);
+                telemetry.addData("Pos D", coefficients.d);
+                telemetry.addData("Pos F", coefficients.f);
+                telemetry.addData("Overall", _pos_gain);
                 break;
             default:
-                printPageTitle(page,"Motor Cmds");
-                _telemetry.addData("Mode", _run_mode.toString());
-                _telemetry.addData("Power Level", _power_level);
+                telemetry.addData("Mode", _run_mode.toString());
+                telemetry.addData("Power Level", _power_level);
                 switch (_run_mode) {
                     case RUN_TO_POSITION:
-                        _telemetry.addData("Tolerance", _position_tolerance);
-                        _telemetry.addData("at Target", atTargetSpeed());
-                        _telemetry.addData(_config.motor_names[0] + " pos", _motors[0].getCurrentPosition());
+                        telemetry.addData("Tolerance", _position_tolerance);
+                        telemetry.addData("at Target", atTargetSpeed());
+                        telemetry.addData(_config.motor_names[0] + " pos", _motors[0].getCurrentPosition());
                         break;
                     case RUN_USING_ENCODER:
-                        _telemetry.addData("Tolerance", _speed_tolerance);
-                        _telemetry.addData("at target", atTargetPosition());
-                        _telemetry.addData(_config.motor_names[0] + " vel", _motors[0].getVelocity());
+                        telemetry.addData("Tolerance", _speed_tolerance);
+                        telemetry.addData("at target", atTargetPosition());
+                        telemetry.addData(_config.motor_names[0] + " vel", _motors[0].getVelocity());
                         break;
                     case RUN_WITHOUT_ENCODER:
-                        _telemetry.addData("Power", _motors[0].getPower());
+                        telemetry.addData("Power", _motors[0].getPower());
                         break;
                 }
                 break;
         }
-    }
-
-    public int numTelemetryPages () {
-        return 4;
-    }
-
-    protected void printPageTitle (int page, String title) {
-        String page_id = _config.name + " (" + page + "/" + numTelemetryPages() + ")";
-        _telemetry.addLine(page_id + " : " + title);
     }
 
     public void setAutoTunePIDF (double vel_gain, double pos_gain) {
