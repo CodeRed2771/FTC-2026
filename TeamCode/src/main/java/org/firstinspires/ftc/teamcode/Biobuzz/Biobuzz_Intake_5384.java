@@ -2,19 +2,20 @@ package org.firstinspires.ftc.teamcode.Biobuzz;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.DCMotor_Mechanism;
+import org.firstinspires.ftc.teamcode.PageDisplay;
 
 
-public class Biobuzz_Intake_5384 {
-    private final DcMotor _intake_motor;
-    private final Telemetry _telemetry;
+public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 
-    public enum IntakeMode {
-        RUN(0.8),
+    public enum Presets {
+        FORWARD(0.8),
         STOP(0.0),
-        REVERSE(-1.0);
+        REVERSE(-1.0),
+        CUSTOM(0.0);
 
         private final double val;
-        private IntakeMode(double new_value)
+        private Presets (double new_value)
         {
             val = new_value;
         }
@@ -22,40 +23,59 @@ public class Biobuzz_Intake_5384 {
             return val;
         }
     }
-    private IntakeMode mode = IntakeMode.STOP;
 
-    public Biobuzz_Intake_5384 (HardwareMap hardwareMap, Telemetry telemetry) {
-        _telemetry = telemetry;
-        _intake_motor = hardwareMap.dcMotor.get("intake");
+    private Presets _intake_mode = Presets.CUSTOM;
+
+    public Biobuzz_Intake_5384 (HardwareMap hardwareMap) {
+        super(new DCMotor_Config( "Intake",
+                                  new String[] { "intake" },
+                                  new DcMotor.Direction[] { DcMotor.Direction.FORWARD },
+                                  1800.0,
+                                  DcMotor.ZeroPowerBehavior.FLOAT),
+              hardwareMap);
+    }
+
+    public void reset(){
+        super.reset();
+        set(Presets.STOP);
     }
     
     public void startIntake() {
-        mode = IntakeMode.RUN;
-        _intake_motor.setPower(mode.value());
+        set(Presets.FORWARD);
     }
 
     public void stopIntake() {
-        mode = IntakeMode.STOP;
-        _intake_motor.setPower(mode.value());
-        
+        set(Presets.STOP);
     }
 
     public void ejectIntake() {
-        mode = IntakeMode.REVERSE;
-        _intake_motor.setPower(mode.value());
-        
-    }
-    
-    public void loop(){
-        _intake_motor.setPower(mode.value());
-    }
-    
-    public void telemetry(int page){
-        switch(page)
-        {
-            default:
-                _telemetry.addData("Intake",mode.toString());
-        }
+        set(Presets.REVERSE);
     }
 
+    public void set (Presets new_mode) {
+        set(_intake_mode.value());
+        _intake_mode = new_mode;
+    }
+
+    public void set(double cmd){
+        _intake_mode = Presets.CUSTOM;
+        setPower(cmd);
+    }
+
+    public double get(){
+        return getPower();
+    }
+
+    public void registerPages(PageDisplay display){
+        display.addPage(getName(), "State Info", 0, this::printTelemetry);
+        super.registerPages(display);
+    }
+
+    public void printTelemetry(Telemetry telemetry, int page){
+        switch(page){
+            default:
+                telemetry.addData("State", _intake_mode.toString());
+                break;
+        }
+    }
 }

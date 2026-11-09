@@ -32,7 +32,7 @@ public class DCMotor_Mechanism {
 
     private final DcMotorEx[] _motors;
     private final DCMotor_Config _config;
-    private double _ticksPerRev;
+    private final double _ticksPerRev;
     private double _posPerRev = 1.0;
     private final double[] _last_cmd;
     private double _power_level;
@@ -226,6 +226,7 @@ public class DCMotor_Mechanism {
     public boolean atTargetPosition () { return atTargetPosition(_position_tolerance); }
 
     public boolean atTargetPosition (double tolerance) {
+        if (_run_mode != DcMotor.RunMode.RUN_TO_POSITION) return false;
         double cur_pos = getPosition();
         double target_pos = _last_cmd[0];
         double error = target_pos - cur_pos;

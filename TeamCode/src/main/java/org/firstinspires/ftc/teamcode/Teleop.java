@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
 @TeleOp(name = "Hive Drive", group = "Iterative Opmode")
-
 public class Teleop extends OpMode {
 
     Orientation angles;
@@ -35,6 +34,8 @@ public class Teleop extends OpMode {
     Storage_5384_2025 storage;
     DecodeCamera camera;
     Lift_5384_2025 lift;
+
+    private final PageDisplay display = new PageDisplay();
 
     boolean red_goal_found = false;
     boolean blue_goal_found = false;
@@ -53,21 +54,26 @@ public class Teleop extends OpMode {
     private boolean LED_TROUBLESHOOTING = false;
     private boolean DISABLE_LIFT = true;
 
-    
+    private final int MAX_PAGES = 20;
+
     @Override
     public void init() {
-        
+
 //        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
         
         driveTrain = new DriveTrain(hardwareMap, telemetry);
-        intake = new Biobuzz_Intake_5384(hardwareMap, telemetry);
-        flower = new Biobuzz_Flower_5384(hardwareMap,telemetry);
+        intake = new Biobuzz_Intake_5384(hardwareMap);
+        flower = new Biobuzz_Flower_5384(hardwareMap);
 //        storage = new Storage_5384_2025(hardwareMap, telemetry);
-        shooter = new Biobuzz_Shooter_5384(hardwareMap, telemetry);
+        shooter = new Biobuzz_Shooter_5384(hardwareMap);
 //        if (!DISABLE_LIFT) {
 //            lift = new Lift_5384_2025(hardwareMap, telemetry);
 //        }
         camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
+
+        intake.registerPages(display);
+        shooter.registerPages(display);
+        flower.registerPages(display);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -94,36 +100,11 @@ public class Teleop extends OpMode {
         doTelemetry();
     }
     
-    boolean back_prev = false;
-    int page = 0;
     private void doTelemetry(){
-        boolean next_page = (gamepad1.backWasPressed() || gamepad2.backWasPressed());
-        if(next_page)
-            page = (page + 1) % 10;
+        if((gamepad1.backWasPressed() || gamepad2.backWasPressed()))
+            display.nextPage();
 
-        telemetry.addData("Page", page);
-        switch(page){
-            case 1:
-            case 2:
-            case 3:
-                driveTrain.telemetry(page - 1);
-
-                break;
-            case 5:
-                intake.telemetry(page - 5);
-                break;
-            case 7:
-            case 8:
-            case 9:
-                flower.telemetry(page - 7);
-                break;
-            case 10:
-                shooter.telemetry(page - 10);
-                break;
-            default:
-                break;
-        }
-        
+        display.print(telemetry);
         telemetry.update();
     }
     
@@ -190,33 +171,24 @@ public class Teleop extends OpMode {
         {
             shooter.setPowerHive();
         }
-
-        
-
-
     }
 
-    private boolean was_pressed = false;
     private void doIntake() {
         if (gamepad1.a) {
             intake.startIntake();
-
         }
         else if (gamepad1.x)  {
             intake.stopIntake();
         }
-        if (gamepad1.y){
+        else if (gamepad1.y){
             intake.ejectIntake();
         }
 
         if (gamepad1.bWasPressed()){
-            was_pressed = true;
-            if (flower.getMode() == Biobuzz_Flower_5384.Defaults.DEPLOY)
+            if (flower.getMode() == Biobuzz_Flower_5384.Presets.DEPLOY)
                 flower.stow();
             else
                 flower.deploy();
-        } else {
-            was_pressed = false;
         }
     }
     
