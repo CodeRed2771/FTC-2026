@@ -145,11 +145,13 @@ public class AutoBaseClass extends LinearOpMode {
 
     public void setupAllianceAndPosition() {
 
-        if (gamepad1.x || gamepad2.x) {
+        if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {
             alliance = Alliance.BLUE;
+            blackboard.put("Alliance", alliance.toString());
         }
-        if (gamepad1.b || gamepad2.b) {
+        if (gamepad1.bWasPressed() || gamepad2.bWasPressed()) {
             alliance = Alliance.RED;
+            blackboard.put("Alliance", alliance.toString());
         }
      
         if (isBlueAlliance()) {

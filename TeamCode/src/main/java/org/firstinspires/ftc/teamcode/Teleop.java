@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
@@ -35,7 +36,7 @@ public class Teleop extends OpMode {
     DecodeCamera camera;
     Lift_5384_2025 lift;
 
-    private final PageDisplay display = new PageDisplay();
+    private PageDisplay display;
 
     boolean red_goal_found = false;
     boolean blue_goal_found = false;
@@ -56,9 +57,13 @@ public class Teleop extends OpMode {
 
     private final int MAX_PAGES = 20;
 
+    private String alliance;
+
     @Override
     public void init() {
+        display = new PageDisplay();
 
+        alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
 //        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
         
         driveTrain = new DriveTrain(hardwareMap, telemetry);
@@ -71,12 +76,25 @@ public class Teleop extends OpMode {
 //        }
         camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
 
+        display.addPage("Main", "Game Info",1, this::printTelemetry);
         intake.registerPages(display);
         shooter.registerPages(display);
         flower.registerPages(display);
 
+        flower.reset();
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        display.gotoPage("Flower", "Motor Monitor");
+    }
+
+    public void printTelemetry(Telemetry telemetry, int page){
+        switch(page){
+            default:
+                telemetry.addData("Alliance", alliance);
+                break;
+        }
     }
     
     @Override

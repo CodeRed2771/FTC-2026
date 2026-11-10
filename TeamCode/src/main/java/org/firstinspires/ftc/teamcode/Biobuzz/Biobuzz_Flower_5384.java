@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Biobuzz;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DCMotor_Mechanism;
@@ -14,7 +13,7 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
     private final DigitalChannel _deploy_limit_switch_1;
     private final DigitalChannel _deploy_limit_switch_2;
 
-    private final double DEPLOY_POWER = 1.0;
+    private final double DEPLOY_POWER = 0.4;
     private final double DEPLOY_TOLERANCE = 5;
 
     private Presets _current_mode = Presets.STOW;
@@ -22,7 +21,7 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
     public enum Presets {
         DEPLOY_LIMIT(-5),
         DEPLOY(0),
-        STOW(115),
+        STOW(105),
         STOW_LIMIT(122);
 
         private final double val;
@@ -40,10 +39,11 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
                 new DCMotor_Config( "Flower",
                                     new String[] { "deploy" },
                                     new DcMotor.Direction[] { DcMotor.Direction.FORWARD },
-                                    1800.0,
+                                    640,
                                     DcMotor.ZeroPowerBehavior.BRAKE),
                 hardwareMap
         );
+        setAutoTunePIDF(1.0,2.0);
 
         _deploy_limit_switch_1 = hardwareMap.tryGet(DigitalChannel.class, "deploy_limit1");
         _deploy_limit_switch_2 = hardwareMap.tryGet(DigitalChannel.class, "deploy_limit2");
@@ -53,6 +53,7 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
         if (_deploy_limit_switch_2 != null)
             _deploy_limit_switch_2.setMode(DigitalChannel.Mode.INPUT);
 
+        setUnitPerRev(getTicksPerRev());
         set_position_tolerance(DEPLOY_TOLERANCE);
     }
 
@@ -67,8 +68,9 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
             setCurrentPosition(Presets.STOW_LIMIT.value());
         }
 
-        gotoPosition(getPosition());
     }
+
+    public void hold() { gotoPosition(getPosition()); }
 
     public void deploy(){
         set(Presets.DEPLOY);
@@ -101,7 +103,7 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
     public void setCurrentPosition (double position){
         position = Math.max(position, Presets.DEPLOY_LIMIT.value());
         position = Math.min(position, Presets.STOW_LIMIT.value());
-        super.gotoPosition(position);
+        super.setCurrentPosition(position);
     }
 
     public boolean isStowed() {
@@ -113,16 +115,20 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
     }
 
     public boolean atDeployLimit (){
-        boolean not_at_limit = true;
+        boolean at_limit = false;
         // switches are "true" while not in contact.
         // while in contact, switches are "false".
-        if ( _deploy_limit_switch_1 != null ) {
-            not_at_limit = not_at_limit && _deploy_limit_switch_1.getState();
+        if ( _deploy_limit_switch_1 != null &&
+             _deploy_limit_switch_1.getState() == false) {
+            at_limit = true;
         }
-        if ( _deploy_limit_switch_2 != null ) {
-            not_at_limit = not_at_limit && _deploy_limit_switch_2.getState();
+
+        if ( _deploy_limit_switch_2 != null &&
+             _deploy_limit_switch_2.getState() == false) {
+            at_limit = true;
         }
-        return ! not_at_limit;
+
+        return at_limit;
     }
 
     public void loop(){

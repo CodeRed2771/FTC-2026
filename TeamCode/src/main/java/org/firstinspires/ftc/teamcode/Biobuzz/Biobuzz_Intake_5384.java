@@ -9,9 +9,9 @@ import org.firstinspires.ftc.teamcode.PageDisplay;
 public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 
     public enum Presets {
-        FORWARD(0.8),
+        FORWARD(0.7),
         STOP(0.0),
-        REVERSE(-1.0),
+        REVERSE(-0.5),
         CUSTOM(0.0);
 
         private final double val;
@@ -30,9 +30,11 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
         super(new DCMotor_Config( "Intake",
                                   new String[] { "intake" },
                                   new DcMotor.Direction[] { DcMotor.Direction.FORWARD },
-                                  1800.0,
+                                  2200,
                                   DcMotor.ZeroPowerBehavior.FLOAT),
               hardwareMap);
+        setAutoTunePIDF(1.0,2.0);
+
     }
 
     public void reset(){
@@ -53,8 +55,8 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
     }
 
     public void set (Presets new_mode) {
-        set(_intake_mode.value());
         _intake_mode = new_mode;
+        set(_intake_mode.value());
     }
 
     public void set(double cmd){

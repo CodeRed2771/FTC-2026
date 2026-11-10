@@ -60,8 +60,8 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     }
 
     public void set (Presets new_mode) {
-        set(_shooter_mode.value());
         _shooter_mode = new_mode;
+        set(_shooter_mode.value());
     }
 
     public void set(double cmd){
