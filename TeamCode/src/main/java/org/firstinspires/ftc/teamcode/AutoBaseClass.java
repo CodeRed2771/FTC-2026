@@ -43,6 +43,7 @@ public class AutoBaseClass extends LinearOpMode {
     protected Shooter_5384_2025 shooter;
     protected Storage_5384_2025 storage;
     protected DecodeCamera camera;
+    protected PageDisplay display;
     
     protected ElapsedTime runtime = new ElapsedTime();
     double timerSetPoint = 999;
@@ -67,6 +68,12 @@ public class AutoBaseClass extends LinearOpMode {
 //        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
 //        storage = new Storage_5384_2025(hardwareMap, telemetry);
         camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
+        display = new PageDisplay();
+
+        driveTrain.registerPages(display);
+//        intake.registerPages(display);
+//        shooter.registerPages(display);
+//        flower.registerPages(display);
     }
 
     public void delay(double milliseconds){
@@ -115,6 +122,8 @@ public class AutoBaseClass extends LinearOpMode {
 //        shooter.loop();
 //        storage.loop();
 //        storage.telemetry(3);
+
+        display.print(telemetry);
         telemetry.update();
     }
     

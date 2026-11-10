@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-
-import com.qualcomm.robotcore.hardware.Gamepad;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 public class DriveTrain {
@@ -76,10 +72,10 @@ public class DriveTrain {
     private double prev_slide = 0.0;
     
     IMU imu;
-    Telemetry telemetry;
+    Telemetry _telemetry;
 
     public DriveTrain (HardwareMap hardwareMap, Telemetry _telemetry) {
-        telemetry = _telemetry;
+        this._telemetry = _telemetry;
         frontRight = hardwareMap.dcMotor.get("frontRight");
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         backRight = hardwareMap.dcMotor.get("backRight");
@@ -142,7 +138,7 @@ public class DriveTrain {
          *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
          *  Forward of center is a positive number, backwards is a negative number.
          */
-        pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(-1.5, -6.325, DistanceUnit.INCH); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -173,6 +169,10 @@ public class DriveTrain {
     }
 
     public void telemetry(int page){
+        telemetry(_telemetry, page);
+    }
+
+    public void telemetry(Telemetry telemetry, int page){
         switch(page)
         {
             case 0:
@@ -195,6 +195,12 @@ public class DriveTrain {
                 telemetry.addData("dT", delta_t);
                 break;
         }     
+    }
+
+    public void registerPages(PageDisplay display){
+        display.addPage("Drive", "Position", 0, this::telemetry);
+        display.addPage("Drive", "Tuning", 1, this::telemetry);
+        display.addPage("Drive", "State", 2, this::telemetry);
     }
 
     public void runDrive_dumb(Gamepad gp) {
@@ -408,9 +414,6 @@ public class DriveTrain {
         power_pid.setTarget(Math.abs(velTarget));
         currentPower = power_pid.update(0.0);
         //setMotorPower(currentPower);
-        
-        telemetry(1);
-        telemetry.update();
     }
 
     public void waitForDriveComplete() {

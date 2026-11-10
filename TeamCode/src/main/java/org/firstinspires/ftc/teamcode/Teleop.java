@@ -77,6 +77,7 @@ public class Teleop extends OpMode {
         camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
 
         display.addPage("Main", "Game Info",1, this::printTelemetry);
+        driveTrain.registerPages(display);
         intake.registerPages(display);
         shooter.registerPages(display);
         flower.registerPages(display);
