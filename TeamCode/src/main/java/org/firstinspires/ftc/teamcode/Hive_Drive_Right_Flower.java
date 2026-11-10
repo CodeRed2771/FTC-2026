@@ -83,7 +83,8 @@ public class Hive_Drive_Right_Flower extends AutoBaseClass {
 
         // step 1: Move and shoot the preloaded pollen
         // 1.1 : move forward 0.5ft
-        driveTrain.driveDistance(-15.0, 0.6, 3);
+        driveTrain.driveDistance(15.0, 0.6, 3);
+        delay(2000);
 
         // 1.2 : ready the shooter (spin it up)
         //shooter.setPowerMid();
@@ -94,15 +95,22 @@ public class Hive_Drive_Right_Flower extends AutoBaseClass {
             double aim = camera.getAutoaim_bearing();
         }
 
-        driveTrain.slideDistance(32, 0.4, 10);
-        driveTrain.driveDistance(-2 * 12, 0.4, 10);
+        driveTrain.slideDistance(-28, 0.4, 10);
+        driveTrain.driveDistance(3 * 12, 0.4, 10);
+        driveTrain.turn(-90, 0.4, 10);
+        driveTrain.driveDistance(16, 0.4, 10);
+        delay(2000);
+
+        driveTrain.driveDistance(-16, 0.4, 10);
         driveTrain.turn(90, 0.4, 10);
+        driveTrain.driveDistance(-3 * 12, 0.4, 10);
+        driveTrain.slideDistance(28, 0.4, 10);
+        delay(2000);
+        driveTrain.slideDistance(-28, 0.4,10);
+        driveTrain.driveDistance(7 * 12, 0.4, 10);
+        driveTrain.slideDistance(-20, 0.4, 10);
         driveTrain.driveDistance(8, 0.4, 10);
 
-        driveTrain.driveDistance(-8, 0.4, 10);
-        driveTrain.turn(-90, 0.4, 10);
-        driveTrain.driveDistance(2 * 12, 0.4, 10);
-        driveTrain.slideDistance(-32, 0.4, 10);
         // 1.4 : adjust aiming (use april tag)
         if (true) {
             // 1.5 : If not seeing april tag, keep pollen and skip to step 2
@@ -110,13 +118,13 @@ public class Hive_Drive_Right_Flower extends AutoBaseClass {
             // 1.6 : Fire all pole
 
 
-            // step 2: Slide over to the runway
-            driveTrain.slideDistance(32, 0.8, 10);
-
-            driveTrain.driveDistance(-5 * 12, 1, 10);
-            // step 3: Ride the wall into the parking zone
-            driveTrain.slideDistance(18, 0.8, 10);
-            driveTrain.driveDistance(-12, 0.8, 10);
+//            // step 2: Slide over to the runway
+//            driveTrain.slideDistance(32, 0.8, 10);
+//
+//            driveTrain.driveDistance(-5 * 12, 1, 10);
+//            // step 3: Ride the wall into the parking zone
+//            driveTrain.slideDistance(18, 0.8, 10);
+//            driveTrain.driveDistance(-12, 0.8, 10);
         }
     }
 }
