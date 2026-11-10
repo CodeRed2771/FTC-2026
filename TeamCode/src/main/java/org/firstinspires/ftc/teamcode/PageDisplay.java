@@ -70,14 +70,19 @@ public class PageDisplay {
     private final List<PageGroup> groups;
     private int currentGroup = -1;
     private int currentPage = -1;
+    private final boolean _default_page_wrap;
+    private final boolean _default_group_wrap;
 
-    PageDisplay()
+    PageDisplay() { this(false, true); }
+    PageDisplay(boolean wrap_pages, boolean wrap_groups)
     {
+        _default_group_wrap = wrap_groups;
+        _default_page_wrap = wrap_pages;
         groups = new ArrayList<>();
     }
 
     public void addGroup(String name){
-        if (findGroup(name) < 0) return;
+        if (findGroup(name) >= 0) return;
         groups.add(new PageGroup(name));
 
         if(currentGroup < 0) currentGroup = 0;
@@ -120,7 +125,40 @@ public class PageDisplay {
         return -1;
     }
 
-    public void nextPage(){
+    public void nextGroup(){ nextGroup(_default_group_wrap); }
+    public void nextGroup(boolean wrap){
+        if(groups.size() <= 0) return;
+
+        currentPage = 0;
+        currentGroup++;
+
+        // If we walked off the end of the groups, wrap to first group
+        if(currentGroup >= groups.size()) {
+            if (wrap)
+                currentGroup = 0;
+            else
+                currentGroup = groups.size() - 1;
+        }
+    }
+
+    public void prevGroup(){ prevGroup(_default_group_wrap); };
+    public void prevGroup(boolean wrap){
+        if(groups.size() <= 0) return;
+
+        currentPage = 0;
+        currentGroup--;
+
+        // If we walked off the end of the groups, wrap to first group
+        if(currentGroup < 0) {
+            if (wrap)
+                currentGroup = groups.size() - 1;
+            else
+                currentGroup = 0;
+        }
+    }
+
+    public void nextPage(){ nextPage(_default_page_wrap); }
+    public void nextPage(boolean wrap){
         if(groups.size() <= 0) return;
         if(groups.get(currentGroup).size() <= 0) return;
 
@@ -129,16 +167,15 @@ public class PageDisplay {
         // If we walked off the end of the current group, start the next.
         if(currentPage >= groups.get(currentGroup).size())
         {
-            currentPage = 0;
-            currentGroup++;
+            if(!wrap)
+                nextGroup();
 
-            // If we walked off the end of the groups, wrap to first group
-            if(currentGroup >= groups.size())
-                currentGroup = 0;
+            currentPage = 0;
         }
     }
 
-    public void prevPage(){
+    public void prevPage(){ prevPage(_default_page_wrap); }
+    public void prevPage(boolean wrap){
         if(groups.size() <= 0) return;
         if(groups.get(currentGroup).size() <= 0) return;
 
@@ -147,12 +184,9 @@ public class PageDisplay {
         // If we walked off the front of the current group, start the previous.
         if(currentPage < 0)
         {
-            currentGroup--;
+            if(!wrap)
+                prevGroup();
 
-            // If we walked off the front of the groups, wrap to last group
-            if(currentGroup < 0){
-                currentGroup = groups.size() - 1;
-            }
             currentPage = groups.get(currentGroup).size() - 1;
         }
     }
