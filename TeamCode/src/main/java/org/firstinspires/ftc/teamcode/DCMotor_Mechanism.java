@@ -56,7 +56,6 @@ public class DCMotor_Mechanism {
             _motors[i] = map.get(DcMotorEx.class, _config.motor_names[i]);
             _motors[i].setDirection(_config.direction[i]);
             _motors[i].setZeroPowerBehavior(_config.zero_power_behavior);
-            _motors[i].resetDeviceConfigurationForOpMode();
         }
 
         MotorConfigurationType mtype = _motors[0].getMotorType().clone();
