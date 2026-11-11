@@ -12,8 +12,8 @@ public class Biobuzz_Shooter_5383 extends DCMotor_Mechanism {
     public enum Presets {
         REVERSE_SLOW(-50.0),
         STOP(0.0),
-        EJECT(50.0),
-        SHOOT(180.0),
+        EJECT(-50.0),
+        SHOOT(150.0),
         CUSTOM(0.0);
 
         private final double val;
@@ -83,5 +83,4 @@ public class Biobuzz_Shooter_5383 extends DCMotor_Mechanism {
                 break;
         }
     }
-
 }

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5383;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5383;
 import org.firstinspires.ftc.teamcode.Biobuzz.DriveTrain_5383;
 
@@ -17,7 +17,7 @@ public class Teleop_5383 extends OpMode {
     Acceleration gravity;
     
     DriveTrain driveTrain;
-    Biobuzz_Intake_5384 intake;
+    Biobuzz_Intake_5383 intake;
     Biobuzz_Shooter_5383 shooter;
     RobotCamera camera;
 
@@ -47,7 +47,7 @@ public class Teleop_5383 extends OpMode {
         alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
 
         driveTrain = new DriveTrain_5383(hardwareMap, telemetry);
-        intake = new Biobuzz_Intake_5384(hardwareMap);
+        intake = new Biobuzz_Intake_5383(hardwareMap);
         shooter = new Biobuzz_Shooter_5383(hardwareMap);
         camera = new RobotCamera(hardwareMap, telemetry,"Webcam 1");
 
