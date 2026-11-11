@@ -34,10 +34,10 @@ public class DecodeCamera extends RobotCamera {
                 super.telemetry(page);
                 break;
             case 1:
-                telemetry.addData("obelisk", obelisk_id);
-                telemetry.addData("ID", found_id);
-                telemetry.addData("Bearing", autoaim_bearing);
-                telemetry.addData("Distance", autoaim_distance);
+                _telemetry.addData("obelisk", obelisk_id);
+                _telemetry.addData("ID", found_id);
+                _telemetry.addData("Bearing", autoaim_bearing);
+                _telemetry.addData("Distance", autoaim_distance);
                 break;
             default:
         }

@@ -2,28 +2,29 @@ package org.firstinspires.ftc.teamcode;
 
 import android.annotation.SuppressLint;
 
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
 import java.util.List;
 
 
-public abstract class RobotCamera {
+public class RobotCamera {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private final HardwareMap hardwareMap;
-    protected final Telemetry telemetry;
+    protected final Telemetry _telemetry;
     
     private List<AprilTagDetection> currentDetections;
     private long lastDetectionTime;
 
     public RobotCamera (HardwareMap hardwareMap, Telemetry telemetry, String deviceName){
-        this.telemetry = telemetry;
+        this._telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         
         initAprilTagProcessor(deviceName);
@@ -41,10 +42,13 @@ public abstract class RobotCamera {
         visionPortal.stopStreaming();
     }
 
-    public void telemetry(int page){
+    public void telemetry(int page) {
+        telemetry(_telemetry,page);
+    }
+    public void telemetry(Telemetry telemetry, int page){
         switch (page) {
             case 0:
-                telemetryAprilTag();
+                telemetryAprilTag(telemetry, page);
                 break;
             default:
         }
@@ -107,7 +111,7 @@ public abstract class RobotCamera {
     }
 
     @SuppressLint("DefaultLocale")
-    public void telemetryAprilTag() {
+    public void telemetryAprilTag(Telemetry telemetry, int page) {
         if (currentDetections != null) {
             telemetry.addData("# AprilTags Detected", currentDetections.size());
         
