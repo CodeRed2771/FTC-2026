@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Decode.Emergency.Lift_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
-@TeleOp(name = "Hive Drive", group = "Iterative Opmode")
+@TeleOp(name = "2026:5384:Emergency Drive", group = "Iterative Opmode")
 public class Teleop extends OpMode {
 
     Orientation angles;
@@ -82,12 +82,14 @@ public class Teleop extends OpMode {
         shooter.registerPages(display);
         flower.registerPages(display);
 
+        intake.reset();
+        shooter.reset();
         flower.reset();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        display.gotoPage("Flower", "Motor Monitor");
+        display.gotoPage("Intake", "State Info");
     }
 
     public void printTelemetry(Telemetry telemetry, int page){
@@ -209,6 +211,8 @@ public class Teleop extends OpMode {
             else
                 flower.deploy();
         }
+
+//        intake.setMaxLoaderCommand(1.0 - gamepad2.right_trigger);
     }
     
     static boolean pressed = false;

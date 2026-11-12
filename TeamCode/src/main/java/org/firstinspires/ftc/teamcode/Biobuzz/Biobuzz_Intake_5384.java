@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Biobuzz;
+
+import androidx.core.math.MathUtils;
+
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DCMotor_Mechanism;
@@ -25,6 +30,10 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
     }
 
     private Presets _intake_mode = Presets.CUSTOM;
+    private double last_cmd;
+    CRServo _loader_motor;
+    private final double CR_MOTOR_CMD_LIMIT = 0.92;
+    private double max_loader_command = CR_MOTOR_CMD_LIMIT;
 
     public Biobuzz_Intake_5384 (HardwareMap hardwareMap) {
         super(new DCMotor_Config( "Intake",
@@ -34,6 +43,9 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
                                   DcMotor.ZeroPowerBehavior.FLOAT),
               hardwareMap);
         setAutoTunePIDF(1.0,2.0);
+
+        _loader_motor = hardwareMap.get(CRServo.class, "loader");
+        _loader_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
 
@@ -59,9 +71,29 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
         set(_intake_mode.value());
     }
 
+    public double getMaxLoaderCommand () {
+        return max_loader_command;
+    }
+
+    public void setMaxLoaderCommand (double max_loader_command) {
+        this.max_loader_command = MathUtils.clamp(max_loader_command,0.0,CR_MOTOR_CMD_LIMIT);
+    }
+
     public void set(double cmd){
         _intake_mode = Presets.CUSTOM;
+        last_cmd = cmd;
         setPower(cmd);
+    }
+
+    @Override
+    public void loop () {
+        super.loop();
+
+        if(Math.abs(last_cmd) < 0.005)
+            _loader_motor.setPower(0.0);
+        else
+            _loader_motor.setPower(Math.signum(last_cmd) * max_loader_command);
+
     }
 
     public double get(){
@@ -77,6 +109,9 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
         switch(page){
             default:
                 telemetry.addData("State", _intake_mode.toString());
+                telemetry.addData("Intake Command", last_cmd);
+                telemetry.addData("Loader Command", last_cmd);
+                telemetry.addData("Loader Power", _loader_motor.getPower());
                 break;
         }
     }

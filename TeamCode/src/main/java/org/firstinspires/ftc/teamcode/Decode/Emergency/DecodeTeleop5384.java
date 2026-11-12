@@ -1,21 +1,19 @@
 package org.firstinspires.ftc.teamcode.Decode.Emergency;
 
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
 import org.firstinspires.ftc.teamcode.Decode.Artifact;
 import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
-import org.firstinspires.ftc.teamcode.DriveTrain;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.EjectorPosition;
+import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
+import org.firstinspires.ftc.teamcode.DriveTrain;
 
-@TeleOp(name = "5384 Drive 2025", group = "Iterative Opmode")
+@TeleOp(name = "Decode - 5384 Drive 2025", group = "Iterative Opmode")
 
 public class DecodeTeleop5384 extends OpMode {
 

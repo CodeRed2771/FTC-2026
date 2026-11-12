@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Hive Right Flower", group = "5384")
+@Autonomous(name = "Hive Right Flower", group = "5384", preselectTeleOp = "2026:5384:Emergency Drive")
 
 public class Hive_Drive_Right_Flower extends AutoBaseClass {
 

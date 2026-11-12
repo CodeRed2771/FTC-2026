@@ -8,9 +8,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5383;
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Storage_5383;
 import org.firstinspires.ftc.teamcode.Biobuzz.DriveTrain_5383;
 
-@TeleOp(name = "83 - Hive Drive", group = "Iterative Opmode")
+@TeleOp(name = "2026:5383:Neutrinos Drive", group = "Iterative Opmode")
 public class Teleop_5383 extends OpMode {
 
     Orientation angles;
@@ -19,6 +20,7 @@ public class Teleop_5383 extends OpMode {
     DriveTrain driveTrain;
     Biobuzz_Intake_5384 intake;
     Biobuzz_Shooter_5383 shooter;
+    Biobuzz_Storage_5383 storage;
     RobotCamera camera;
 
     private PageDisplay display;
@@ -49,13 +51,19 @@ public class Teleop_5383 extends OpMode {
         driveTrain = new DriveTrain_5383(hardwareMap, telemetry);
         intake = new Biobuzz_Intake_5384(hardwareMap);
         shooter = new Biobuzz_Shooter_5383(hardwareMap);
+        storage = new Biobuzz_Storage_5383(hardwareMap);
+
         camera = new RobotCamera(hardwareMap, telemetry,"Webcam 1");
+
+        intake.reset();
+        shooter.reset();
 
         display.addPage("Main", "Game Info",1, this::printTelemetry);
         display.addPage("Camera","April Tags", 0, camera::telemetryAprilTag);
         driveTrain.registerPages(display);
         intake.registerPages(display);
         shooter.registerPages(display);
+        storage.registerPages(display);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -83,6 +91,7 @@ public class Teleop_5383 extends OpMode {
         driveTrain.loop();
         intake.loop();
         shooter.loop();
+        storage.loop();
 
         doTelemetry();
     }
@@ -153,12 +162,16 @@ public class Teleop_5383 extends OpMode {
     private void doIntake() {
         if (gamepad1.a) {
             intake.startIntake();
+            storage.set(Biobuzz_Storage_5383.Presets.DOWN);
+
         }
         else if (gamepad1.x)  {
             intake.stopIntake();
+            storage.set(Biobuzz_Storage_5383.Presets.UP);
         }
         else if (gamepad1.y){
             intake.ejectIntake();
+            storage.set(Biobuzz_Storage_5383.Presets.DOWN);
         }
 
     }

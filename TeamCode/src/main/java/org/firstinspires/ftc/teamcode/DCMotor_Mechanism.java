@@ -63,7 +63,7 @@ public class DCMotor_Mechanism {
 
         _last_cmd = new double[_config.motor_names.length];
 
-        reset();
+        setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void reset () {
@@ -232,8 +232,8 @@ public class DCMotor_Mechanism {
     public double getTicksPerRev () { return _ticksPerRev; }
     public void setGearRatio (double ratio) { _gear_ratio = ratio; }
     public double getGearRatio () { return _gear_ratio; }
-    private int revToTicks (double revolutions) { return (int) (revolutions * _ticksPerRev * _gear_ratio); }
-    private double ticksToRev (double ticks) { return (ticks / _ticksPerRev) / _gear_ratio; }
+    private int revToTicks (double revolutions) { return (int) (revolutions * _ticksPerRev / _gear_ratio); }
+    private double ticksToRev (double ticks) { return (ticks / _ticksPerRev) * _gear_ratio; }
 
     public double get_speed_tolerance () { return _speed_tolerance; }
 
