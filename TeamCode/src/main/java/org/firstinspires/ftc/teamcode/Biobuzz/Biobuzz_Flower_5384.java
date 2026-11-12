@@ -96,8 +96,7 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
         limited_target = Math.max(limited_target, Presets.DEPLOY_LIMIT.value());
 
         // Drive the motor to the target position
-        super.gotoPosition(limited_target);
-        setPositionPower(DEPLOY_POWER);
+        super.gotoPosition(limited_target,DEPLOY_POWER);
     }
 
     public void setCurrentPosition (double position){

@@ -10,7 +10,7 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
 
     public enum Presets {
         DOWN(0.0),
-        UP(-4.5),
+        UP(28),
         CUSTOM(0.0);
 
         private final double val;
@@ -23,22 +23,22 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         }
     }
 
+    private final double INITIAL_POSITION = 33.0;
     private Presets _preset_mode = Presets.CUSTOM;
+    private final double DEPLOY_POWER = 0.5;
 
     public Biobuzz_Storage_5383 (HardwareMap hardwareMap) {
         super(new DCMotor_Config( "Storage",
                                   new String[] { "tipper" },
                                   new DcMotor.Direction[] { DcMotor.Direction.FORWARD },
                                   2200,
-                                  DcMotor.ZeroPowerBehavior.FLOAT),
+                                  DcMotor.ZeroPowerBehavior.BRAKE),
               hardwareMap);
         setGearRatio(5.0*5.0);
-        setAutoTunePIDF(1.0,2.0);
+        setAutoTunePIDF(1.0,1.0);
 
-    }
+        setCurrentPosition(INITIAL_POSITION);
 
-    public void reset(){
-        super.reset();
     }
 
     public void set (Presets new_mode) {
@@ -50,7 +50,7 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
 
     public void set(double cmd){
         _preset_mode = Presets.CUSTOM;
-        gotoPosition(cmd);
+        gotoPosition(cmd,DEPLOY_POWER);
     }
 
     public double get(){
@@ -66,6 +66,7 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         switch(page){
             default:
                 telemetry.addData("State", _preset_mode.toString());
+                telemetry.addData("Position", getPosition());
                 break;
         }
     }

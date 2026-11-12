@@ -253,6 +253,11 @@ public class DCMotor_Mechanism {
 
     /********** Motor Position Control Functions ***************/
     double zero_position_offset = 0;
+    public void gotoPosition (double position, double power) {
+        gotoPosition(position);
+        setPositionPower(power);
+    }
+
     public void gotoPosition (double position) {
         setUniformCmd(position);
         setMode(DcMotor.RunMode.RUN_TO_POSITION);
