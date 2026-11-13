@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.Biobuzz;
+import androidx.core.math.MathUtils;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DCMotor_Mechanism;
 import org.firstinspires.ftc.teamcode.PageDisplay;
@@ -26,6 +30,10 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
     private final double INITIAL_POSITION = 33.0;
     private Presets _preset_mode = Presets.CUSTOM;
     private final double DEPLOY_POWER = 0.5;
+    NormalizedColorSensor colorSensor;
+    private double color_gain = 6.2;
+    private final float RAMP_COLOR_THRESHOLD = 0.297f;
+    private final double DOWN_CURRENT_LIMIT = 0.3;
 
     public Biobuzz_Storage_5383 (HardwareMap hardwareMap) {
         super(new DCMotor_Config( "Storage",
@@ -37,8 +45,29 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         setGearRatio(5.0*5.0);
         setAutoTunePIDF(1.0,1.0);
 
-        setCurrentPosition(INITIAL_POSITION);
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "ramp_color");
+        setColorGain(color_gain);
 
+        if(isRampUp())
+            setCurrentPosition(INITIAL_POSITION);
+        else
+            setCurrentPosition(Presets.DOWN.value());
+
+
+    }
+
+    @Override
+    public void loop(){
+        super.loop();
+
+        if(_preset_mode == Presets.UP && isRampUp()){
+            setCurrentPosition(Presets.UP.value());
+        }
+
+        if(_preset_mode == Presets.DOWN && getPeakCurrent() > DOWN_CURRENT_LIMIT)
+            setCurrentPosition(Presets.DOWN.value());
+
+        set(_preset_mode);
     }
 
     public void set (Presets new_mode) {
@@ -57,8 +86,25 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         return getPosition();
     }
 
+    public double getColorGain () {
+        return color_gain;
+    }
+
+    public void setColorGain (double gain) {
+        color_gain = MathUtils.clamp(gain,1.0,10.0);
+        colorSensor.setGain((float) color_gain);
+    }
+
+    public void incrementColorGain (double delta) {
+        setColorGain(getColorGain() + delta);
+    }
+
+    public boolean isRampUp(){
+        return colorSensor.getNormalizedColors().red >= RAMP_COLOR_THRESHOLD;
+    }
+
     public void registerPages(PageDisplay display){
-        display.addPage(getName(), "State Info", 0, this::printTelemetry);
+        display.addPage(getName(), "Main", 0, this::printTelemetry);
         super.registerPages(display);
     }
 
@@ -67,6 +113,8 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
             default:
                 telemetry.addData("State", _preset_mode.toString());
                 telemetry.addData("Position", getPosition());
+                telemetry.addData("Color Gain", color_gain);
+                telemetry.addData("Color", colorSensor.getNormalizedColors().red);
                 break;
         }
     }

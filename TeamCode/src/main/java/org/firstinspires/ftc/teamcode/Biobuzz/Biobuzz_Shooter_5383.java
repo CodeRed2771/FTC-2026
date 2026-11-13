@@ -10,10 +10,10 @@ import org.firstinspires.ftc.teamcode.PageDisplay;
 public class Biobuzz_Shooter_5383 extends DCMotor_Mechanism {
 
     public enum Presets {
-        REVERSE_SLOW(-50.0),
+        REVERSE_SLOW(-0.25),
         STOP(0.0),
-        EJECT(50.0),
-        SHOOT(180.0),
+        EJECT(0.25),
+        SHOOT(0.98),
         CUSTOM(0.0);
 
         private final double val;
@@ -50,7 +50,7 @@ public class Biobuzz_Shooter_5383 extends DCMotor_Mechanism {
     }
 
     public void eject () {
-        set(Presets.EJECT);
+        set(Presets.REVERSE_SLOW);
     }
 
     public void stop() {
@@ -64,7 +64,7 @@ public class Biobuzz_Shooter_5383 extends DCMotor_Mechanism {
 
     public void set(double cmd){
         _shooter_mode = Presets.CUSTOM;
-        setSpeed(cmd);
+        setPower(cmd);
     }
 
     public double get(){

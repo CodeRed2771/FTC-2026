@@ -68,7 +68,7 @@ public class Teleop_5383 extends OpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        display.gotoPage("Storage", "Motor Cmds");
+        display.gotoPage("Storage", "Main");
 
     }
 
@@ -99,7 +99,9 @@ public class Teleop_5383 extends OpMode {
     }
     
     private void doTelemetry(){
-        if((gamepad1.backWasPressed() || gamepad2.backWasPressed()))
+        if(gamepad1.backWasPressed())
+            display.nextGroup();
+        if(gamepad2.backWasPressed())
             display.nextPage();
 
         display.print(telemetry);
@@ -142,15 +144,15 @@ public class Teleop_5383 extends OpMode {
     private boolean wasShooting = false;
     private void doShooter() {
 
-        if (gamepad1.dpad_up) {
+        if (gamepad2.dpad_up) {
             autoaim = false;
             shooter.setPowerHive();
         }
-        else if (gamepad1.dpad_left || gamepad1.dpad_right) {
+        else if (gamepad2.dpad_left || gamepad2.dpad_right) {
             autoaim = false;
             shooter.stop();
         }
-        else if (gamepad1.dpad_down) {
+        else if (gamepad2.dpad_down) {
             autoaim = false;
             shooter.eject();
         }
@@ -160,20 +162,24 @@ public class Teleop_5383 extends OpMode {
             shooter.setPowerHive();
         }
 
-        if (gamepad2.bWasPressed())
+        if (gamepad2.b)
             storage.set(Biobuzz_Storage_5383.Presets.UP);
 
-        if (gamepad2.aWasPressed())
+        if (gamepad2.a)
             storage.set(Biobuzz_Storage_5383.Presets.DOWN);
 
+        if (gamepad2.right_bumper)
+            storage.incrementColorGain(0.005);
+        if (gamepad2.left_bumper)
+            storage.incrementColorGain(-0.005);
     }
 
     private void doIntake() {
-        if (gamepad1.a) {
+        if (gamepad1.a || gamepad2.x) {
             intake.startIntake();
 
         }
-        else if (gamepad1.x)  {
+        else if (gamepad1.x || gamepad2.y)  {
             intake.stopIntake();
         }
         else if (gamepad1.y){
