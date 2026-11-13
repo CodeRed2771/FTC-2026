@@ -33,7 +33,6 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
     NormalizedColorSensor colorSensor;
     private double color_gain = 6.2;
     private final float RAMP_COLOR_THRESHOLD = 0.297f;
-    private final double DOWN_CURRENT_LIMIT = 0.3;
 
     public Biobuzz_Storage_5383 (HardwareMap hardwareMap) {
         super(new DCMotor_Config( "Storage",
@@ -60,14 +59,13 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
     public void loop(){
         super.loop();
 
-        if(_preset_mode == Presets.UP && isRampUp()){
+        if((_preset_mode == Presets.UP) && isRampUp()){
             setCurrentPosition(Presets.UP.value());
         }
 
-        if(_preset_mode == Presets.DOWN && getPeakCurrent() > DOWN_CURRENT_LIMIT)
+        if((_preset_mode == Presets.DOWN) && isBound())
             setCurrentPosition(Presets.DOWN.value());
 
-        set(_preset_mode);
     }
 
     public void set (Presets new_mode) {

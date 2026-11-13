@@ -47,6 +47,9 @@ public class DCMotor_Mechanism {
     double _gear_ratio = 1.0;
     private double max_current = 0;
     private double bind_detect_threshold = 2.0;
+    private double bind_duration_ms = 500;
+    private boolean prev_bind_state = false;
+    private long start_of_bind = 0;
 
     /***************  Creation, Initialization, and Configuration ****************/
     public DCMotor_Mechanism (DCMotor_Config config, HardwareMap map) {
@@ -135,6 +138,11 @@ public class DCMotor_Mechanism {
 
     private void checkCurrent () {
         double local_max_current = getPeakCurrent();
+        boolean current_bind_state = (local_max_current > bind_detect_threshold);
+        if(current_bind_state && ! prev_bind_state){
+            start_of_bind = System.currentTimeMillis();
+        }
+        prev_bind_state = current_bind_state;
 
         if (local_max_current > max_current)
             max_current = local_max_current;
@@ -147,7 +155,7 @@ public class DCMotor_Mechanism {
     }
 
     public boolean isBound(){
-        return (getPeakCurrent() > bind_detect_threshold);
+        return ((System.currentTimeMillis() - start_of_bind) < bind_duration_ms) && prev_bind_state;
     }
 
     public double getPeakCurrent(){
@@ -286,9 +294,11 @@ public class DCMotor_Mechanism {
 
     public void setCurrentPosition (double position) {
         zero_position_offset = 0.0;
-
         double raw_pos = ticksToPosition(_motors[0].getCurrentPosition());
         zero_position_offset = position - raw_pos;
+
+        if(_run_mode == DcMotor.RunMode.RUN_TO_POSITION)
+            applyPositionCmd(_last_cmd);
     }
 
     public boolean atTargetPosition () { return atTargetPosition(_position_tolerance); }
