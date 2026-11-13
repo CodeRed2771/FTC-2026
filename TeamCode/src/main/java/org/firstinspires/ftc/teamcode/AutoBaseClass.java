@@ -21,6 +21,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Intake_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Shooter_5384_2025;
@@ -116,6 +119,7 @@ public class AutoBaseClass extends LinearOpMode {
     
     public void autoLoop(){
         camera.doLoop();
+        driveTrain.loop();
 //        intake.loop();
 //        shooter.loop();
 //        storage.loop();
@@ -124,7 +128,14 @@ public class AutoBaseClass extends LinearOpMode {
         display.print(telemetry);
         telemetry.update();
     }
-    
+
+    public void saveLastAutoPosition(){
+        Pose2D currentPose = driveTrain.getCurrentPosition();
+        blackboard.put("auto_x", currentPose.getX(DistanceUnit.INCH));
+        blackboard.put("auto_y", currentPose.getY(DistanceUnit.INCH));
+        blackboard.put("auto_hdg", currentPose.getHeading(AngleUnit.DEGREES));
+    }
+
     boolean timeExpired() {
         return runtime.seconds() >= timerSetPoint;
     }

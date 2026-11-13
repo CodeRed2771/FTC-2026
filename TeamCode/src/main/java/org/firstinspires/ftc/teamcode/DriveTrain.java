@@ -53,7 +53,8 @@ public class DriveTrain {
     double bl_cal =(1+leftbias)*(1-fwdbias);
     double br_cal =(1-leftbias)*(1-fwdbias);
     Orientation angles;
-    double init_angle;
+    double anchor_angle;
+    AngleUnit FCAnchorAngleUnit = AngleUnit.RADIANS;
     long powerSelectHigh = 0;
     long powerSelectThreshold = 1;
     long fcSelectThreshold = 1;
@@ -131,6 +132,14 @@ public class DriveTrain {
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, heading));
     }
 
+    public void setCurrentPosition(Pose2D position){
+        pinpoint.setPosition(position);
+    }
+
+    public Pose2D getCurrentPosition(){
+        return pinpoint.getPosition();
+    }
+
     public void configurePinpoint(){
         /*
          *  Set the odometry pod positions relative to the point that you want the position to be measured from.
@@ -188,7 +197,7 @@ public class DriveTrain {
                 break;
             default:
                 telemetry.addData("Field Centric",fieldCentricEnabled);
-                telemetry.addData("Anchor Angle", init_angle);
+                telemetry.addData("Anchor Angle", getFCAngle(AngleUnit.DEGREES));
                 telemetry.addData("Heading", rot_angle);
                 telemetry.addData("Power", powerLevel);
                 telemetry.addData("dT", delta_t);
@@ -251,7 +260,15 @@ public class DriveTrain {
         }
        
    }
-        
+
+    public void setFCAngle(AngleUnit unit, double angle_rad){
+       anchor_angle = FCAnchorAngleUnit.fromUnit(unit, angle_rad);
+    }
+
+    public double getFCAngle(AngleUnit unit){
+        return unit.fromUnit(FCAnchorAngleUnit, anchor_angle);
+    }
+
     private boolean last_fc_toggle = false;
     private double rot_angle = 0.0;
     private double delta_t = 0.0;
@@ -259,7 +276,7 @@ public class DriveTrain {
         double new_forward = forward;
         double new_slide = slide;
         angles = new Orientation();//imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-        rot_angle = -(currentPose.getHeading(AngleUnit.RADIANS)-init_angle);
+        rot_angle = -(currentPose.getHeading(AngleUnit.RADIANS)- getFCAngle(AngleUnit.RADIANS));
         boolean reset_init_angle = gp.back;
         
         speedAdjust(gp);
@@ -278,7 +295,7 @@ public class DriveTrain {
             fcSelectHigh = 0;
         }
         
-        if (reset_init_angle) init_angle = currentPose.getHeading(AngleUnit.RADIANS);
+        if (reset_init_angle) setFCAngle(AngleUnit.RADIANS,currentPose.getHeading(AngleUnit.RADIANS));
 
         if(fieldCentricEnabled){
             new_forward = forward * Math.cos(rot_angle) - slide * Math.sin(rot_angle);

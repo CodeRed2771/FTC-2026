@@ -5,7 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5383;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5383;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Storage_5383;
@@ -50,6 +53,8 @@ public class Teleop_5383 extends OpMode {
         alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
 
         driveTrain = new DriveTrain_5383(hardwareMap);
+        restoreAutoState();
+
         intake = new Biobuzz_Intake_5383(hardwareMap);
         shooter = new Biobuzz_Shooter_5383(hardwareMap);
         storage = new Biobuzz_Storage_5383(hardwareMap);
@@ -69,6 +74,25 @@ public class Teleop_5383 extends OpMode {
 
         display.gotoPage("Storage", "Main");
 
+    }
+
+    protected void restoreAutoState(){
+        alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
+
+        if("RED".equals(alliance))
+            driveTrain.setFCAngle(AngleUnit.DEGREES, 90.0);
+        else if("BLUE".equals(alliance))
+            driveTrain.setFCAngle(AngleUnit.DEGREES, -90.0);
+
+        Object x = blackboard.getOrDefault("auto_x",0.0);
+        Object y = blackboard.getOrDefault("auto_y",0.0);
+        Object hdg = blackboard.getOrDefault("auto_hdg",0.0);
+
+        if(x == null || y == null || hdg == null)
+            return;
+
+        Pose2D position = new Pose2D(DistanceUnit.INCH, (double) x, (double) y, AngleUnit.DEGREES, (double) hdg);
+        driveTrain.setCurrentPosition(position);
     }
 
     public void printTelemetry(Telemetry telemetry, int page){

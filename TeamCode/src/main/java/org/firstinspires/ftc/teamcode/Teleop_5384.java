@@ -7,7 +7,10 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5384;
@@ -63,10 +66,9 @@ public class Teleop_5384 extends OpMode {
     public void init() {
         display = new PageDisplay();
 
-        alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
-//        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
-        
         driveTrain = new DriveTrain(hardwareMap);
+        restoreAutoState();
+
         intake = new Biobuzz_Intake_5384(hardwareMap);
         flower = new Biobuzz_Flower_5384(hardwareMap);
 //        storage = new Storage_5384_2025(hardwareMap);
@@ -90,6 +92,26 @@ public class Teleop_5384 extends OpMode {
         telemetry.update();
 
         display.gotoPage("Shooter", "State Info");
+    }
+
+    protected void restoreAutoState(){
+        alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
+
+        if("RED".equals(alliance))
+            driveTrain.setFCAngle(AngleUnit.DEGREES, 90.0);
+        else if("BLUE".equals(alliance))
+            driveTrain.setFCAngle(AngleUnit.DEGREES, -90.0);
+
+
+        Object x = blackboard.getOrDefault("auto_x",0.0);
+        Object y = blackboard.getOrDefault("auto_y",0.0);
+        Object hdg = blackboard.getOrDefault("auto_hdg",0.0);
+
+        if(x == null || y == null || hdg == null)
+            return;
+
+        Pose2D position = new Pose2D(DistanceUnit.INCH, (double) x, (double) y, AngleUnit.DEGREES, (double) hdg);
+        driveTrain.setCurrentPosition(position);
     }
 
     public void printTelemetry(Telemetry telemetry, int page){
