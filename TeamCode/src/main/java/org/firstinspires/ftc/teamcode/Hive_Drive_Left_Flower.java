@@ -84,9 +84,7 @@ public class Hive_Drive_Left_Flower extends AutoBaseClass {
         // Wait up to X seconds leaving enough time for parking
 
         while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < startTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
+            autoLoop();
 
             idle();
 

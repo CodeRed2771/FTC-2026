@@ -73,8 +73,8 @@ public class PageDisplay {
     private final boolean _default_page_wrap;
     private final boolean _default_group_wrap;
 
-    PageDisplay() { this(false, true); }
-    PageDisplay(boolean wrap_pages, boolean wrap_groups)
+    public PageDisplay () { this(false, true); }
+    public PageDisplay (boolean wrap_pages, boolean wrap_groups)
     {
         _default_group_wrap = wrap_groups;
         _default_page_wrap = wrap_pages;

@@ -72,10 +72,8 @@ public class DriveTrain {
     private double prev_slide = 0.0;
     
     IMU imu;
-    Telemetry _telemetry;
 
-    public DriveTrain (HardwareMap hardwareMap, Telemetry _telemetry) {
-        this._telemetry = _telemetry;
+    public DriveTrain (HardwareMap hardwareMap) {
         frontRight = hardwareMap.dcMotor.get("frontRight");
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         backRight = hardwareMap.dcMotor.get("backRight");
@@ -171,10 +169,6 @@ public class DriveTrain {
          * an incorrect starting value for x, y, and heading.
          */
         pinpoint.resetPosAndIMU();
-    }
-
-    public void telemetry(int page){
-        telemetry(_telemetry, page);
     }
 
     public void telemetry(Telemetry telemetry, int page){

@@ -63,11 +63,11 @@ public class AutoBaseClass extends LinearOpMode {
     protected StartPosition fieldPosition;
 
     public void initializeRobot() {
-        driveTrain = new DriveTrain(hardwareMap, telemetry);
+        driveTrain = new DriveTrain(hardwareMap);
 //        intake = new Intake_5384_2025(hardwareMap, telemetry);
 //        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
 //        storage = new Storage_5384_2025(hardwareMap, telemetry);
-        camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
+        camera = new DecodeCamera(hardwareMap, "Webcam 1");
         display = new PageDisplay();
 
         driveTrain.registerPages(display);
@@ -81,9 +81,7 @@ public class AutoBaseClass extends LinearOpMode {
 
         giveUpTime = System.currentTimeMillis()+milliseconds;
         while (opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
+            autoLoop();
 
             idle();
         }

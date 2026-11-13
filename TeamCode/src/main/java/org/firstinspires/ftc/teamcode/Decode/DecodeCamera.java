@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Decode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.PageDisplay;
 import org.firstinspires.ftc.teamcode.RobotCamera;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
@@ -16,8 +17,8 @@ public class DecodeCamera extends RobotCamera {
     private double autoaim_bearing = 0.0;
 
 
-    public DecodeCamera (HardwareMap hardwareMap, Telemetry telemetry, String deviceName) {
-        super(hardwareMap, telemetry, deviceName);
+    public DecodeCamera (HardwareMap hardwareMap, String deviceName) {
+        super(hardwareMap, deviceName);
     }
 
     @Override
@@ -27,17 +28,19 @@ public class DecodeCamera extends RobotCamera {
         captureTargets();
     }
 
+    public void registerPages(PageDisplay display){
+        super.registerPages(display);
+        display.addPage(Name, "Game Elements", 1, this::telemetry);
+    }
+
     @Override
-    public void telemetry(int page) {
+    public void telemetry(Telemetry telemetry, int page) {
         switch (page) {
-            case 0:
-                super.telemetry(page);
-                break;
             case 1:
-                _telemetry.addData("obelisk", obelisk_id);
-                _telemetry.addData("ID", found_id);
-                _telemetry.addData("Bearing", autoaim_bearing);
-                _telemetry.addData("Distance", autoaim_distance);
+                telemetry.addData("obelisk", obelisk_id);
+                telemetry.addData("ID", found_id);
+                telemetry.addData("Bearing", autoaim_bearing);
+                telemetry.addData("Distance", autoaim_distance);
                 break;
             default:
         }

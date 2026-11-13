@@ -66,15 +66,15 @@ public class Teleop_5384 extends OpMode {
         alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
 //        led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
         
-        driveTrain = new DriveTrain(hardwareMap, telemetry);
+        driveTrain = new DriveTrain(hardwareMap);
         intake = new Biobuzz_Intake_5384(hardwareMap);
         flower = new Biobuzz_Flower_5384(hardwareMap);
-//        storage = new Storage_5384_2025(hardwareMap, telemetry);
+//        storage = new Storage_5384_2025(hardwareMap);
         shooter = new Biobuzz_Shooter_5384(hardwareMap);
 //        if (!DISABLE_LIFT) {
-//            lift = new Lift_5384_2025(hardwareMap, telemetry);
+//            lift = new Lift_5384_2025(hardwareMap);
 //        }
-        camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
+        camera = new DecodeCamera(hardwareMap, "Webcam 1");
 
         display.addPage("Main", "Game Info",1, this::printTelemetry);
         driveTrain.registerPages(display);

@@ -17,17 +17,15 @@ import java.util.List;
 public class RobotCamera {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
-    private final HardwareMap hardwareMap;
-    protected final Telemetry _telemetry;
-    
+    protected final String Name;
+
     private List<AprilTagDetection> currentDetections;
     private long lastDetectionTime;
 
-    public RobotCamera (HardwareMap hardwareMap, Telemetry telemetry, String deviceName){
-        this._telemetry = telemetry;
-        this.hardwareMap = hardwareMap;
+    public RobotCamera (HardwareMap hardwareMap, String deviceName){
+        Name=deviceName;
         
-        initAprilTagProcessor(deviceName);
+        initAprilTagProcessor(hardwareMap,deviceName);
     }
     
     public void doLoop() {
@@ -42,8 +40,8 @@ public class RobotCamera {
         visionPortal.stopStreaming();
     }
 
-    public void telemetry(int page) {
-        telemetry(_telemetry,page);
+    public void registerPages(PageDisplay display){
+        display.addPage(Name, "April Tags", 0, this::telemetry);
     }
     public void telemetry(Telemetry telemetry, int page){
         switch (page) {
@@ -59,7 +57,7 @@ public class RobotCamera {
         lastDetectionTime = System.currentTimeMillis();
     }
 
-    private void initAprilTagProcessor(String deviceName) {
+    private void initAprilTagProcessor(HardwareMap hardwareMap, String deviceName) {
         WebcamName installedCamera = hardwareMap.tryGet(WebcamName.class, deviceName);
 
         // Create the AprilTag processor the easy way.

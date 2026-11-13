@@ -107,8 +107,7 @@ public class AutoGoal5384 extends AutoBaseClass {
         giveUpTime = System.currentTimeMillis()+3000;   
         while (camera.getObeliskID() == 0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
             autoLoop();
-            camera.telemetry(0);
-            telemetry.update();
+
             idle();
             
         }

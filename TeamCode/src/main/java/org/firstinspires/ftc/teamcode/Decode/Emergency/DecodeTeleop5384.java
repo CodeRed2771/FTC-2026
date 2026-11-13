@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Decode.Artifact;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.EjectorPosition;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 import org.firstinspires.ftc.teamcode.DriveTrain;
+import org.firstinspires.ftc.teamcode.PageDisplay;
 
 @TeleOp(name = "Decode - 5384 Drive 2025", group = "Iterative Opmode")
 
@@ -30,6 +32,7 @@ public class DecodeTeleop5384 extends OpMode {
     Storage_5384_2025 storage;
     DecodeCamera camera;
     Lift_5384_2025 lift;
+    PageDisplay display = new PageDisplay();
 
     boolean red_goal_found = false;
     boolean blue_goal_found = false;
@@ -51,17 +54,30 @@ public class DecodeTeleop5384 extends OpMode {
     
     @Override
     public void init() {
-        
         led = hardwareMap.get(RevBlinkinLedDriver.class,"led");
-        
-        driveTrain = new DriveTrain(hardwareMap, telemetry);
-        intake = new Intake_5384_2025(hardwareMap, telemetry);
-        storage = new Storage_5384_2025(hardwareMap, telemetry);
-        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
+
+        display.addPage("Robot", "Main", 0, this::robotTelemetry);
+
+
+        driveTrain = new DriveTrain(hardwareMap);
+        driveTrain.registerPages(display);
+
+        intake = new Intake_5384_2025(hardwareMap);
+        intake.registerPages(display);
+
+        storage = new Storage_5384_2025(hardwareMap);
+        storage.registerPages(display);
+
+        shooter = new Shooter_5384_2025(hardwareMap);
+        shooter.registerPages(display);
+
         if (!DISABLE_LIFT) {
-            lift = new Lift_5384_2025(hardwareMap, telemetry);
+            lift = new Lift_5384_2025(hardwareMap);
+            lift.registerPages(display);
         }
-        camera = new DecodeCamera(hardwareMap, telemetry,"Webcam 1");
+
+        camera = new DecodeCamera(hardwareMap,"Webcam 1");
+        camera.registerPages(display);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -89,57 +105,19 @@ public class DecodeTeleop5384 extends OpMode {
     
     boolean back_prev = false;
     int page = 0;
-    private void doTelemetry(){
-        boolean back = (gamepad1.back || gamepad2.back);
-        if(!back_prev && back)
-            page = (page + 1) % 10;
-        back_prev = back;
-        
-        telemetry.addData("Page", page);
+    private void doTelemetry() {
+        if (gamepad1.backWasPressed())
+            display.nextGroup();
+        if (gamepad2.backWasPressed())
+            display.nextPage();
+
+        display.print(telemetry);
+        telemetry.update();
+    }
+
+    public void robotTelemetry(Telemetry telemetry,int page){
         switch(page){
-            case 1:
-                driveTrain.telemetry(page - 1);
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-                }
-                break;
-            case 2:
-                intake.telemetry(page - 2);
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-                }
-                break;
-            case 3:
-                shooter.telemetry(page - 3);
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
-                }
-                break;
-            case 4:
-                if (lift != null) {
-                    lift.telemetry(page - 4);
-                    if (LED_TROUBLESHOOTING) {
-                        led.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_OCEAN_PALETTE);
-                    }
-                } else {
-                    telemetry.addData("Lift Disabled", true);
-                }
-                break;
-            case 5:
-            case 6:
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-                }
-                storage.telemetry(page - 5);
-                break;
-            case 7:
-            case 8:
-                if (LED_TROUBLESHOOTING) {
-                    led.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-                }
-                camera.telemetry(page - 7);
-                break; 
-            case 9:
+            case 0:
                 if (LED_TROUBLESHOOTING) {
                     led.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
                 }

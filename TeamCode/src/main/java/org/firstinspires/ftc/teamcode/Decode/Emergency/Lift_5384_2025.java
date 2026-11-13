@@ -18,11 +18,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 package org.firstinspires.ftc.teamcode.Decode.Emergency;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.PageDisplay;
 
 /**
  * This file contains a minimal example of an iterative (Non-Linear) "OpMode". An OpMode is a
@@ -40,7 +42,6 @@ public class Lift_5384_2025 {
 
     private DcMotorEx lift1 = null;
     private boolean isLifting = false;
-    private Telemetry telemetry;
     
     // --- Targets ---
     private double targetRpm = 150;    // starting preset (change to your wheel/gearbox)
@@ -67,8 +68,7 @@ public class Lift_5384_2025 {
     private double lastCommandedTicks;
     private final ElapsedTime loopTimer = new ElapsedTime();
 
-    public Lift_5384_2025 (HardwareMap hardwareMap, Telemetry telemetry){
-        this.telemetry = telemetry;
+    public Lift_5384_2025 (HardwareMap hardwareMap){
         
         lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
         // lift1.setDirection(DcMotor.Direction.REVERSE);
@@ -92,8 +92,11 @@ public class Lift_5384_2025 {
 
         loopTimer.reset();
     }
-    
-    public void telemetry(int page){
+
+    public void registerPages(PageDisplay display){
+        display.addPage("Lift", "Main", 1, this::telemetry);
+    }
+    public void telemetry(Telemetry telemetry,int page){
         switch(page)
         {
             default:

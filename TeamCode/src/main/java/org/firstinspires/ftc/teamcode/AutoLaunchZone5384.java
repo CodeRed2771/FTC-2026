@@ -103,9 +103,7 @@ public class AutoLaunchZone5384 extends AutoBaseClass {
         
         giveUpTime = System.currentTimeMillis()+2000;
         while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < giveUpTime) {
-            camera.doLoop();
-            camera.telemetry(0);
-            telemetry.update();
+            autoLoop();
             
             idle();
         }

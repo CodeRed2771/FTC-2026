@@ -3,15 +3,14 @@ package org.firstinspires.ftc.teamcode.Biobuzz;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DriveTrain;
 
 
 public class DriveTrain_5383 extends DriveTrain {
 
 
-    public DriveTrain_5383 (HardwareMap hardwareMap, Telemetry _telemetry) {
-        super(hardwareMap, _telemetry);
+    public DriveTrain_5383 (HardwareMap hardwareMap) {
+        super(hardwareMap);
     }
 
     protected void configureMotors(){

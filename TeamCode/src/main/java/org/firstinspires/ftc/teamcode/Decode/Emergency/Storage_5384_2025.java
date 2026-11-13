@@ -29,14 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.Decode.Emergency;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Decode.Artifact;
+import org.firstinspires.ftc.teamcode.PageDisplay;
 /*
  * This OpMode scans a single servo back and forward until Stop is pressed.
  * The code is structured as a LinearOpMode
@@ -56,7 +56,6 @@ public class Storage_5384_2025 {
  
     Servo   servo_right;
     Servo   servo_left;
-    private Telemetry telemetry;
     private DistanceSensor sensorDistanceRight;
     private DistanceSensor sensorDistanceLeft;
     long lastLeftMoveTime = 0;
@@ -130,8 +129,8 @@ public class Storage_5384_2025 {
     double rightDistanceCm = 0.0;
     double leftDistanceCm = 0.0;
 
-    public Storage_5384_2025(HardwareMap hardwareMap, Telemetry _telemetry) {
-        telemetry = _telemetry;
+    public Storage_5384_2025(HardwareMap hardwareMap) {
+
         servo_right = hardwareMap.servo.get("wiper_right");
         servo_left = hardwareMap.servo.get("wiper_left");
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "distance_right");
@@ -383,7 +382,13 @@ public class Storage_5384_2025 {
         }
     }
 
-    public void telemetry(int page){
+    public void registerPages(PageDisplay display){
+        display.addPage("Storage", "Main", 0, this::telemetry);
+        display.addPage("Storage", "Sensors", 1, this::telemetry);
+        display.addPage("Storage", "Artifacts", 2, this::telemetry);
+    }
+
+    public void telemetry(Telemetry telemetry, int page){
         switch(page)
         {
             case 0:

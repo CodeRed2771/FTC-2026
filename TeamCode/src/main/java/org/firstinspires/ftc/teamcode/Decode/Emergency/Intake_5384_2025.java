@@ -2,12 +2,12 @@ package org.firstinspires.ftc.teamcode.Decode.Emergency;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.PageDisplay;
 
 
 public class Intake_5384_2025 {
     private final DcMotor _intake_motor;
-    private final Telemetry _telemetry;
-    
+
     public enum IntakeMode {
         RUN(0.8),
         STOP(0.0),
@@ -24,8 +24,7 @@ public class Intake_5384_2025 {
     }
     private IntakeMode mode = IntakeMode.STOP;
     
-    public Intake_5384_2025 (HardwareMap hardwareMap, Telemetry telemetry) {
-        _telemetry = telemetry;
+    public Intake_5384_2025 (HardwareMap hardwareMap) {
         _intake_motor = hardwareMap.dcMotor.get("intake");
     }
     
@@ -49,12 +48,16 @@ public class Intake_5384_2025 {
     public void loop(){
         _intake_motor.setPower(mode.value());
     }
-    
-    public void telemetry(int page){
+
+    public void registerPages(PageDisplay display){
+        display.addPage("Intake", "Main", 0, this::telemetry);
+    }
+
+    public void telemetry(Telemetry telemetry, int page){
         switch(page)
         {
             default:
-                _telemetry.addData("Intake",mode.toString());
+                telemetry.addData("Intake",mode.toString());
         }
     }
 
