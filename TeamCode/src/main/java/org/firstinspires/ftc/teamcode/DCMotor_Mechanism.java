@@ -44,6 +44,7 @@ public class DCMotor_Mechanism {
     private double _vel_gain = 1.0;
     private double _pos_gain = 1.0;
     private double max_tick_per_sec = 0;
+    double _gear_ratio = 1.0;
     private double max_current = 0;
     private double bind_detect_threshold = 2.0;
 
@@ -70,7 +71,7 @@ public class DCMotor_Mechanism {
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    private void setMode (DcMotor.RunMode mode) {
+    protected void setMode (DcMotor.RunMode mode) {
         if (_run_mode != mode) {
             _run_mode = mode;
             applyMixedCmd(_run_mode);
@@ -196,7 +197,6 @@ public class DCMotor_Mechanism {
     }
 
     /************** Motor Speed Control Functions ***************/
-    double _gear_ratio = 1.0;
     public void stopSpeed () { setSpeed(0.0); }
 
     public void setSpeed (double speed) {

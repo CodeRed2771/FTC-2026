@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.PageDisplay;
 public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 
     public enum Presets {
-        FORWARD(0.7),
+        FORWARD(0.5),
         STOP(0.0),
         REVERSE(-0.5),
         CUSTOM(0.0);
@@ -34,6 +34,12 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
     CRServo _loader_motor;
     private final double CR_MOTOR_CMD_LIMIT = 0.92;
     private double max_loader_command = CR_MOTOR_CMD_LIMIT;
+
+    private long spinup_delay_time = 0;
+    private final double rollback_power = -0.5;
+    private final long ROLLBACK_TIME_MS = 0;
+    private long fire_delay_time = 0;
+    private final long FIRE_WAIT_TIME_MS = 3000;
 
     public Biobuzz_Intake_5384 (HardwareMap hardwareMap) {
         super(new DCMotor_Config( "Intake",
@@ -58,17 +64,32 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
         set(Presets.FORWARD);
     }
 
-    public void stopIntake() {
+    public void stop () {
         set(Presets.STOP);
     }
 
-    public void ejectIntake() {
+    public void fireAll(){
+        spinup_delay_time = System.currentTimeMillis() + ROLLBACK_TIME_MS;
+        fire_delay_time = System.currentTimeMillis() + FIRE_WAIT_TIME_MS;
+        setFeeder(rollback_power);
+    }
+
+    public void eject () {
         set(Presets.REVERSE);
     }
 
+    private void setFeeder(double cmd){
+//        if(cmd < 0.0)
+//            _loader_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        else
+//            _loader_motor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        _loader_motor.setPower(cmd);
+    }
+
     public void set (Presets new_mode) {
+        set(new_mode.value());
         _intake_mode = new_mode;
-        set(_intake_mode.value());
     }
 
     public double getMaxLoaderCommand () {
@@ -89,11 +110,19 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
     public void loop () {
         super.loop();
 
-        if(Math.abs(last_cmd) < 0.005)
-            _loader_motor.setPower(0.0);
-        else
-            _loader_motor.setPower(Math.signum(last_cmd) * max_loader_command);
-
+        if((spinup_delay_time > 0) && (System.currentTimeMillis() > spinup_delay_time)) {
+            setFeeder(0.0);
+            if(fire_delay_time > 0 && (System.currentTimeMillis() > fire_delay_time)) {
+                spinup_delay_time = 0;
+                fire_delay_time = 0;
+                startIntake();
+            }
+        } else {
+            if(Math.abs(last_cmd) < 0.005)
+                setFeeder(0.0);
+            else
+                setFeeder(Math.signum(last_cmd) * max_loader_command);
+        }
     }
 
     public double get(){
@@ -112,6 +141,7 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
                 telemetry.addData("Intake Command", last_cmd);
                 telemetry.addData("Loader Command", last_cmd);
                 telemetry.addData("Loader Power", _loader_motor.getPower());
+                telemetry.addData("Loader Direction", _loader_motor.getDirection());
                 break;
         }
     }

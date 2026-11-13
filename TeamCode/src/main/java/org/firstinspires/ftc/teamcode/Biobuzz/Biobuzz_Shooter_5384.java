@@ -12,8 +12,8 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     public enum Presets {
         REVERSE_SLOW(-50.0),
         STOP(0.0),
-        EJECT(50.0),
-        SHOOT(180.0),
+        EJECT(-0.75),
+        SHOOT(2.0),
         CUSTOM(0.0);
 
         private final double val;
@@ -28,6 +28,10 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     private Presets _shooter_mode = Presets.CUSTOM;
 
     private final double MOTOR_POWER = 1.0;
+    private final long ROLLBACK_TIME_MS = 250;
+    private long spinup_mode = 0;
+    private final double rollback_distance = 0.3;
+    private final double rollback_power = 0.5;
 
     public Biobuzz_Shooter_5384 (HardwareMap hardwareMap){
         super(new DCMotor_Config( "Shooter",
@@ -38,6 +42,7 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
                         1800.0,
                         DcMotor.ZeroPowerBehavior.FLOAT),
                 hardwareMap);
+        setAutoTunePIDF(1.0,1.0);
 
         set_speed_tolerance(20.0);
     }
@@ -48,7 +53,21 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     }
 
     public void setPowerHive() {
-        set(Presets.SHOOT);
+        if(_shooter_mode == Presets.SHOOT) return;
+
+        if (spinup_mode == 0)
+            spinup_mode = System.currentTimeMillis() + ROLLBACK_TIME_MS;
+
+        gotoPosition(getPosition()-rollback_distance,rollback_power);
+    }
+
+    @Override
+    public void loop () {
+        super.loop();
+        if((spinup_mode > 0) && (System.currentTimeMillis() > spinup_mode)) {
+            spinup_mode = 0;
+            set(Presets.SHOOT);
+        }
     }
 
     public void eject () {
@@ -60,8 +79,8 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     }
 
     public void set (Presets new_mode) {
+        set(new_mode.value());
         _shooter_mode = new_mode;
-        set(_shooter_mode.value());
     }
 
     public void set(double cmd){

@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
 @TeleOp(name = "2026:5384:Emergency Drive", group = "Iterative Opmode")
-public class Teleop extends OpMode {
+public class Teleop_5384 extends OpMode {
 
     Orientation angles;
     IMU imu;
@@ -89,7 +89,7 @@ public class Teleop extends OpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        display.gotoPage("Intake", "State Info");
+        display.gotoPage("Shooter", "State Info");
     }
 
     public void printTelemetry(Telemetry telemetry, int page){
@@ -122,7 +122,9 @@ public class Teleop extends OpMode {
     }
     
     private void doTelemetry(){
-        if((gamepad1.backWasPressed() || gamepad2.backWasPressed()))
+        if(gamepad1.backWasPressed())
+            display.nextGroup();
+        if(gamepad2.backWasPressed())
             display.nextPage();
 
         display.print(telemetry);
@@ -175,17 +177,20 @@ public class Teleop extends OpMode {
     private boolean wasShooting = false;
     private void doShooter() {
 
-        if (gamepad1.dpad_up) {
+        if (gamepad2.aWasPressed()) {
             autoaim = false;
             shooter.setPowerHive();
+            intake.fireAll();
         }
-        else if (gamepad1.dpad_left || gamepad1.dpad_right) {
+        else if (gamepad2.x) {
             autoaim = false;
             shooter.stop();
+            intake.stop();
         }
         else if (gamepad1.dpad_down) {
             autoaim = false;
             shooter.eject();
+            intake.eject();
         }
         
         if (autoaim)
@@ -195,24 +200,22 @@ public class Teleop extends OpMode {
     }
 
     private void doIntake() {
-        if (gamepad1.a) {
+        if (gamepad1.a || gamepad2.dpad_up) {
             intake.startIntake();
         }
-        else if (gamepad1.x)  {
-            intake.stopIntake();
+        else if (gamepad1.x  || gamepad2.dpad_left)  {
+            intake.stop();
         }
-        else if (gamepad1.y){
-            intake.ejectIntake();
+        else if (gamepad1.y || gamepad2.dpad_down){
+            intake.eject();
         }
 
-        if (gamepad1.bWasPressed()){
+        if (false && (gamepad1.bWasPressed() || gamepad2.bWasPressed())){
             if (flower.getMode() == Biobuzz_Flower_5384.Presets.DEPLOY)
                 flower.stow();
             else
                 flower.deploy();
         }
-
-//        intake.setMaxLoaderCommand(1.0 - gamepad2.right_trigger);
     }
     
     static boolean pressed = false;
