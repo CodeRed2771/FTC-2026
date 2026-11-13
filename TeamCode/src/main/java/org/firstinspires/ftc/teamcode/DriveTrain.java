@@ -577,10 +577,7 @@ public class DriveTrain {
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        YawPitchRollAngles robotOrientation;
-        //robotOrientation = imu.getRobotYawPitchRollAngles();
-        robotOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0,0.0,0.0,0);
-        double Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
+        double Yaw = pinpoint.getHeading(AngleUnit.DEGREES);
         
         double deltaAngle = Yaw - lastHeading;
 
