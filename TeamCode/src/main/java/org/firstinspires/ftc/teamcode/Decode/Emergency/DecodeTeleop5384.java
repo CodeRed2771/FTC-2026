@@ -173,11 +173,20 @@ public class DecodeTeleop5384 extends OpMode {
 
     double steerToTag = 0.0;
     private void doDrive(){
+
+        driveTrain.speedAdjust(gamepad1.startWasPressed());
+
+        if (gamepad1.rightBumperWasPressed())
+            driveTrain.resetFCAngle();
+
+        if (gamepad1.leftBumperWasPressed())
+            driveTrain.toggleFieldCentricState();
+
+
         double slide = -gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
         double forward = -gamepad1.left_stick_y;
-
-        driveTrain.runDrive_fieldCentric(gamepad1, forward, slide, turn+steerToTag);
+        driveTrain.runDrive_fieldCentric(forward, slide, turn+steerToTag);
     }
     
     private boolean wasShooting = false;

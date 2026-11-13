@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -62,6 +61,7 @@ public class DriveTrain {
     
     private final double min_pwr = 0.2;
     int leftFrontStartPos;
+    int pinpoint_drive_ticks = 0;
     
     boolean fieldCentricEnabled = false;
     
@@ -198,7 +198,7 @@ public class DriveTrain {
             default:
                 telemetry.addData("Field Centric",fieldCentricEnabled);
                 telemetry.addData("Anchor Angle", getFCAngle(AngleUnit.DEGREES));
-                telemetry.addData("Heading", rot_angle);
+                telemetry.addData("Heading", getHeadingFormatted());
                 telemetry.addData("Power", powerLevel);
                 telemetry.addData("dT", delta_t);
                 break;
@@ -211,14 +211,8 @@ public class DriveTrain {
         display.addPage("Drive", "State", 2, this::telemetry);
     }
 
-    public void runDrive_dumb(Gamepad gp) {
+    public void runDrive_dumb(double forward, double slide, double turn) {
 
-        double slide = -gp.left_stick_x;
-        double turn = -gp.right_stick_x;
-        double forward = -gp.left_stick_y;
-
-        speedAdjust(gp);
-        
         double power_fr = (forward+slide+turn)*powerLevel;
         double power_br = (forward-slide+turn)*powerLevel;
         double power_fl = (forward-slide-turn)*powerLevel;
@@ -238,19 +232,13 @@ public class DriveTrain {
    }
 
    private double powerLevel = 0.8;
-   public void speedAdjust(Gamepad gp){
-        boolean powerSelect = gp.right_bumper;
-        if (powerSelect) {
-            powerSelectHigh += 1;
-        } else {
-            if (powerSelectHigh >= powerSelectThreshold) {
-                if (slowToggle) {
-                    slowToggle = false;
-                } else {
-                    slowToggle = true;
-                }
+   public void speedAdjust(boolean togglePowerLevel){
+        if (togglePowerLevel) {
+            if (slowToggle) {
+                slowToggle = false;
+            } else {
+                slowToggle = true;
             }
-            powerSelectHigh = 0;
         }
         
         if (slowToggle) {
@@ -258,44 +246,40 @@ public class DriveTrain {
         } else {
             powerLevel = 0.8;   
         }
-       
    }
 
     public void setFCAngle(AngleUnit unit, double angle_rad){
        anchor_angle = FCAnchorAngleUnit.fromUnit(unit, angle_rad);
     }
 
+    public void resetFCAngle(){
+        setFCAngle(AngleUnit.RADIANS,currentPose.getHeading(AngleUnit.RADIANS));
+    }
     public double getFCAngle(AngleUnit unit){
         return unit.fromUnit(FCAnchorAngleUnit, anchor_angle);
     }
 
-    private boolean last_fc_toggle = false;
-    private double rot_angle = 0.0;
+    public boolean isFieldCentricEnabled () {
+        return fieldCentricEnabled;
+    }
+
+    public void setFieldCentricState (boolean enable) {
+        fieldCentricEnabled = enable;
+    }
+
+    public void toggleFieldCentricState(){
+        if (isFieldCentricEnabled()) {
+            setFieldCentricState(false);
+        } else {
+            setFieldCentricState(true);
+        }
+    }
+
     private double delta_t = 0.0;
-    public void runDrive_fieldCentric(Gamepad gp, double forward, double slide, double turn){
+    public void runDrive_fieldCentric(double forward, double slide, double turn){
         double new_forward = forward;
         double new_slide = slide;
-        angles = new Orientation();//imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-        rot_angle = -(currentPose.getHeading(AngleUnit.RADIANS)- getFCAngle(AngleUnit.RADIANS));
-        boolean reset_init_angle = gp.back;
-        
-        speedAdjust(gp);
-        
-        boolean fc_toggle = gp.left_bumper;
-        if (fc_toggle) {
-            fcSelectHigh += 1;
-        } else {
-            if (fcSelectHigh >= fcSelectThreshold) {
-                if (fieldCentricEnabled) {
-                    fieldCentricEnabled = false;
-                } else {
-                    fieldCentricEnabled = true;
-                }
-            }
-            fcSelectHigh = 0;
-        }
-        
-        if (reset_init_angle) setFCAngle(AngleUnit.RADIANS,currentPose.getHeading(AngleUnit.RADIANS));
+        double rot_angle = -(currentPose.getHeading(AngleUnit.RADIANS)- getFCAngle(AngleUnit.RADIANS));
 
         if(fieldCentricEnabled){
             new_forward = forward * Math.cos(rot_angle) - slide * Math.sin(rot_angle);
@@ -373,6 +357,7 @@ public class DriveTrain {
         int targetTicks = calculateDistanceTicks(distance);
 
         leftFrontStartPos = frontLeft.getCurrentPosition();
+        pinpoint_drive_ticks = pinpoint.getEncoderX();
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + targetTicks);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() + targetTicks);
@@ -500,7 +485,7 @@ public class DriveTrain {
     }
 
     public void turnTo(double degrees, double pwr, double maxSeconds) {
-        turn(getTurnAmount(degrees), pwr, maxSeconds);
+        turn(getNearestTurnAmount(degrees), pwr, maxSeconds);
     }
 
     public void gyroTurn(double degrees, double maxPwr, double maxSeconds) {
@@ -537,9 +522,9 @@ public class DriveTrain {
         //stopDriveMotors();
     }
 
-    private double getTurnAmount(double degrees) {
+    private double getNearestTurnAmount (double degrees) {
 
-        return degrees - getHeading();
+        return AngleUnit.DEGREES.fromUnit(AngleUnit.DEGREES,degrees - getHeading());
     }
 
     public boolean turnCompleted() {
@@ -584,24 +569,11 @@ public class DriveTrain {
      * @return Angle in degrees. + = left, - = right.
      */
     public double getHeading() {
-         // We have to process the angle because the imu works in euler angles so the Z axis is
+        // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        double Yaw = pinpoint.getHeading(AngleUnit.DEGREES);
-        
-        double deltaAngle = Yaw - lastHeading;
-
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-
-        lastHeading = Yaw;
-
-        return -globalAngle;
+        return  pinpoint.getHeading(AngleUnit.DEGREES);
     }
 
     public void setRunWithoutEncoders() {
