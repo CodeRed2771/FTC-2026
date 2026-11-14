@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Hive Right Flower", group = "5384", preselectTeleOp = "2026:5384:Emergency Drive")
+@Autonomous(name = "2026:5384:Shoot + Drive Right", group = "5384", preselectTeleOp = "2026:5384:Emergency Drive")
 
 public class Hive_Drive_Right_Flower extends AutoBaseClass_5384 {
 
@@ -56,7 +56,7 @@ public class Hive_Drive_Right_Flower extends AutoBaseClass_5384 {
         // step 1: Move and shoot the preloaded pollen
         // 1.1 : move forward 0.5ft
         driveTrain.driveDistance(15.0, 0.6, 3);
-        delay(2000);
+//        delay(2000);
 
         // 1.2 : ready the shooter (spin it up)
         //shooter.setPowerMid();

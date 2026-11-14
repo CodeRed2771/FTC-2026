@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Hive Drive Right", group = "5384")
+@Autonomous(name = "2026:5384:Just Drive Right", group = "5384")
 
 public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
 
@@ -59,16 +59,10 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
 
         // step 1: Move and shoot the preloaded pollen
         // 1.1 : move forward 0.5ft
-        driveTrain.driveDistance(15.0, 0.6, 3);
+        driveTrain.driveDistance(15.0, 0.6, 1);
 
         // 1.2 : ready the shooter (spin it up)
         //shooter.setPowerMid();
-
-        // 1.3 : look for the april tag
-        camera.doLoop();
-        if(camera.goalFound()) {
-            double aim = camera.getAutoaim_bearing();
-        }
 
 
         // 1.4 : adjust aiming (use april tag)
@@ -79,11 +73,13 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
 
 
         // step 2: Slide over to the runway
-        driveTrain.slideDistance(-32,0.8,10);
+        driveTrain.slideDistance(-32,0.8,2);
 
-        driveTrain.driveDistance(5*12,1,10);
+        driveTrain.driveDistance(8*12,0.8,4);
         // step 3: Ride the wall into the parking zone
-        driveTrain.slideDistance(-18, 0.8, 10);
-        driveTrain.driveDistance(12, 0.8, 10);
+        driveTrain.slideDistance(-12, 0.8, 2);
+        driveTrain.slideDistance(-12, 0.3, 2);
+        driveTrain.slideDistance(5, 0.8, 1);
+        driveTrain.driveDistance(12, 0.8, 2);
     }
 }

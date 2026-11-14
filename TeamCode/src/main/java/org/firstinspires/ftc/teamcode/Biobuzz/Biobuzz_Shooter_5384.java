@@ -28,7 +28,7 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     private Presets _shooter_mode = Presets.CUSTOM;
 
     private final double MOTOR_POWER = 1.0;
-    private final long ROLLBACK_TIME_MS = 250;
+    private final long ROLLBACK_TIME_MS = 400;
     private long spinup_mode = 0;
     private final double rollback_distance = 0.5;
     private final double rollback_power = 0.5;

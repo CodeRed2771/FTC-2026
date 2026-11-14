@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "5384:2026:Emergency Just Drive Left", group = "5384")
+@Autonomous(name = "2026:5384:Emergency Just Drive Left", group = "5384")
 public class Auto_Just_Drive_Left_5384 extends AutoBaseClass_5384 {
 
     // Starts with robot facing the wall in the Launch Zone

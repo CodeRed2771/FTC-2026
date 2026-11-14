@@ -37,9 +37,9 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 
     private long spinup_delay_time = 0;
     private final double rollback_power = -0.5;
-    private final long ROLLBACK_TIME_MS = 0;
+    private final long ROLLBACK_TIME_MS = 750;
     private long fire_delay_time = 0;
-    private final long FIRE_WAIT_TIME_MS = 3000;
+    private final long FIRE_WAIT_TIME_MS = 1500;
 
     public Biobuzz_Intake_5384 (HardwareMap hardwareMap) {
         super(new DCMotor_Config( "Intake",
@@ -110,12 +110,17 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
     public void loop () {
         super.loop();
 
-        if((spinup_delay_time > 0) && (System.currentTimeMillis() > spinup_delay_time)) {
-            setFeeder(0.0);
-            if(fire_delay_time > 0 && (System.currentTimeMillis() > fire_delay_time)) {
-                spinup_delay_time = 0;
-                fire_delay_time = 0;
-                startIntake();
+        if(spinup_delay_time > 0){
+            if (System.currentTimeMillis() < spinup_delay_time) {
+                setFeeder(rollback_power);
+            } else {
+                if (fire_delay_time > 0 && (System.currentTimeMillis() > fire_delay_time)) {
+                    spinup_delay_time = 0;
+                    fire_delay_time = 0;
+                    startIntake();
+                } else {
+                    setFeeder(0.0);
+                }
             }
         } else {
             if(Math.abs(last_cmd) < 0.005)

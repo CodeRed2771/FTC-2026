@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Storage_5383;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "5383:2026:Neutrinos Just Drive Left", group = "5384")
+@Autonomous(name = "2026:5383:Neutrinos Just Drive Left", group = "5384")
 public class Auto_Just_Drive_Left_5383 extends AutoBaseClass_5383 {
 
     // Starts with robot facing the wall in the Launch Zone
