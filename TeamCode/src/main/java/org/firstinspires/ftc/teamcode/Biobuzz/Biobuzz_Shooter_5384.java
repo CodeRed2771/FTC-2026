@@ -13,7 +13,7 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
         REVERSE_SLOW(-50.0),
         STOP(0.0),
         EJECT(-0.75),
-        SHOOT(5.0),
+        SHOOT(2.6),
         CUSTOM(0.0);
 
         private final double val;
@@ -30,7 +30,7 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
     private final double MOTOR_POWER = 1.0;
     private final long ROLLBACK_TIME_MS = 250;
     private long spinup_mode = 0;
-    private final double rollback_distance = 0.3;
+    private final double rollback_distance = 0.5;
     private final double rollback_power = 0.5;
 
     public Biobuzz_Shooter_5384 (HardwareMap hardwareMap){

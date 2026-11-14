@@ -28,7 +28,7 @@ public class DriveTrain {
 
     double _vel_gain = 1.0;
     double _pos_gain = 1.0;
-    double MAX_MOTOR_TICKS_PER_SEC = 1000.0;
+    double MAX_MOTOR_TICKS_PER_SEC = 1500.0;
 
     GoBildaPinpointDriver pinpoint;
 
