@@ -239,7 +239,7 @@ public class Teleop_5384 extends OpMode {
             intake.eject();
         }
 
-        if (false && (gamepad1.bWasPressed() || gamepad2.bWasPressed())){
+        if (true && (gamepad1.bWasPressed() || gamepad2.bWasPressed())){
             if (flower.getMode() == Biobuzz_Flower_5384.Presets.DEPLOY)
                 flower.stow();
             else

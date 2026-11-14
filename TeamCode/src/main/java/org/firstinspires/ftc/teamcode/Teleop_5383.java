@@ -26,7 +26,7 @@ public class Teleop_5383 extends OpMode {
     Biobuzz_Storage_5383 storage;
     RobotCamera camera;
 
-    private final PageDisplay display = new PageDisplay();
+    private PageDisplay display;
 
     final double AIM_LED_TOLERANCE = 1.0;
     final double aim_bias = 2.0;
@@ -47,8 +47,7 @@ public class Teleop_5383 extends OpMode {
 
     @Override
     public void init() {
-        display.addPage("Main", "Game Info",1, this::printTelemetry);
-        display.addPage("Camera","April Tags", 0, camera::telemetryAprilTag);
+        display = new PageDisplay();
 
         alliance = (String) blackboard.getOrDefault("Alliance","UNKNOWN");
 
@@ -60,6 +59,8 @@ public class Teleop_5383 extends OpMode {
         storage = new Biobuzz_Storage_5383(hardwareMap);
 
         camera = new RobotCamera(hardwareMap, "Webcam 1");
+        display.addPage("Main", "Game Info",1, this::printTelemetry);
+        display.addPage("Camera","April Tags", 0, camera::telemetryAprilTag);
 
         intake.reset();
         shooter.reset();

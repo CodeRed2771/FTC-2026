@@ -13,7 +13,7 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
         REVERSE_SLOW(-50.0),
         STOP(0.0),
         EJECT(-0.75),
-        SHOOT(2.0),
+        SHOOT(5.0),
         CUSTOM(0.0);
 
         private final double val;
