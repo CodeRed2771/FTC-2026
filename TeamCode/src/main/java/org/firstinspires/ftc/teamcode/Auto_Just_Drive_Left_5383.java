@@ -20,6 +20,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Storage_5383;
+
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
  * in either the autonomous or the TeleOp period of an FTC match. The names of OpModes appear on
@@ -69,8 +71,7 @@ public class Auto_Just_Drive_Left_5383 extends AutoBaseClass_5383 {
         driveTrain.slideDistance(-3, 0.8, 1);
         if(!opModeIsActive()) return;
 
-        driveTrain.driveDistance(9, 0.8, 2);
-        if(!opModeIsActive()) return;
-
+        storage.set(Biobuzz_Storage_5383.Presets.DOWN);
+        delay(1000);
     }
 }
