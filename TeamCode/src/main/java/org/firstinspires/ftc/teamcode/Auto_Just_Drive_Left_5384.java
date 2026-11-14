@@ -30,43 +30,44 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name = "Move A Little", group = "5384")
+@Autonomous(name = "5384:2026:Emergency Just Drive Left", group = "5384")
+public class Auto_Just_Drive_Left_5384 extends AutoBaseClass_5384 {
 
-public class AutoMoveALittle5384 extends AutoBaseClass {
-
+    // Starts with robot facing the wall in the Launch Zone
+    private int MAX_RUNTIME = 30;
     @Override
     public void runOpMode() {
-        int obeliskValue = 0;
-        
-        initializeRobot();
-        
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-        // Wait for the game to start (driver presses PLAY)
-        
-        while (!isStarted()) {
-              
-            setupAllianceAndPosition();
 
+        initializeRobot();
+        configureRobot();
+        fieldPosition = StartPosition.LEFT;
+
+        while (!isStarted()) {
+
+            setupDelayedStart();
+            setupAllianceAndPosition();
+            updateTelemetry();
             idle();
         }
+        if(!opModeIsActive()) return;
+        autonomous_step_name = "RUNNING";
+        delay(delayedStart * 1000);
 
+        // #1.  Drive forward to get Leave points
+        driveTrain.driveDistance(12.0, .8, 3);
+        if(!opModeIsActive()) return;
 
-        
-        while (obeliskValue==0) {
-            obeliskValue = camera.getObeliskID();
-            telemetry.addData("obelisk", obeliskValue);
-        }
-      
-  
-        driveTrain.slideDistance(-24,1,6);
+        // #2.0  Look for the Hive to be tipped how we want.
+        // Wait up to X seconds leaving enough time for parking
+        delay(500);
 
-        
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            telemetry.addData("Status", "Running");
-            telemetry.update();
-            
-        }
+        driveTrain.slideDistance(5*12, 0.8, 3);
+        if(!opModeIsActive()) return;
+        driveTrain.slideDistance(-3, 0.8, 1);
+        if(!opModeIsActive()) return;
+
+        driveTrain.driveDistance(9, 0.8, 2);
+        if(!opModeIsActive()) return;
+
     }
 }

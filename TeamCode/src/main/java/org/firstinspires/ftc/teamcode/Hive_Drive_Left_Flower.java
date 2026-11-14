@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * added to the Driver Station.
  */
 @Autonomous(name = "Hive Drive Left Flower", group = "5384", preselectTeleOp = "2026:5384:Emergency Drive")
-public class Hive_Drive_Left_Flower extends AutoBaseClass {
+public class Hive_Drive_Left_Flower extends AutoBaseClass_5384 {
 
     // Starts with robot facing the wall in the Launch Zone
     private int MAX_RUNTIME = 30;
@@ -39,42 +39,20 @@ public class Hive_Drive_Left_Flower extends AutoBaseClass {
     @Override
     public void runOpMode() {
 
-        double delayedStart = 0.0;
-        int up_deadband = 0;
-        int down_deadband = 0;
-
         initializeRobot();
-        
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        configureRobot();
+        fieldPosition = StartPosition.LEFT;
 
         while (!isStarted()) {
-            if(gamepad1.dpad_up || gamepad2.dpad_up){
-                up_deadband += 1;
-            } else {
-                if (up_deadband > 0)
-                    delayedStart += 1.0;
-                up_deadband = 0;
-            }
-            if(gamepad1.dpad_down || gamepad2.dpad_down)
-            {
-                down_deadband += 1;
-            } else {
-                if (down_deadband > 0)
-                    delayedStart -= 1.0;
-                down_deadband = 0;
-            }
-            delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,30);
-            telemetry.addData("DELAY", delayedStart);
 
+            setupDelayedStart();
             setupAllianceAndPosition();
+            updateTelemetry();
             idle();
         }
-
+        if(!opModeIsActive()) return;
+        autonomous_step_name = "RUNNING";
         double startTime = System.currentTimeMillis();
-        opModeIsActive();
-
         delay(delayedStart * 1000);
 
         // #1.  Drive forward to get Leave points
@@ -96,6 +74,7 @@ public class Hive_Drive_Left_Flower extends AutoBaseClass {
             }
         }
 
+//        shooter.setPowerHive();
         delay(1500);
 
         driveTrain.slideDistance(15, 0.4, 10);

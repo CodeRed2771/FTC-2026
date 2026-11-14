@@ -21,13 +21,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Intake_5384_2025;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Shooter_5384_2025;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
 
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
@@ -41,10 +39,6 @@ import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
  */
 
 public class AutoBaseClass extends LinearOpMode {
-    protected DriveTrain driveTrain;
-    protected Intake_5384_2025 intake;
-    protected Shooter_5384_2025 shooter;
-    protected Storage_5384_2025 storage;
     protected DecodeCamera camera;
     protected PageDisplay display;
     
@@ -62,21 +56,21 @@ public class AutoBaseClass extends LinearOpMode {
         LEFT,
         RIGHT
     }
+
+    protected String autonomous_step_name = "NOT STARTED";
     protected Alliance alliance;
     protected StartPosition fieldPosition;
 
     public void initializeRobot() {
-        driveTrain = new DriveTrain(hardwareMap);
-//        intake = new Intake_5384_2025(hardwareMap, telemetry);
-//        shooter = new Shooter_5384_2025(hardwareMap, telemetry);
-//        storage = new Storage_5384_2025(hardwareMap, telemetry);
         camera = new DecodeCamera(hardwareMap, "Webcam 1");
         display = new PageDisplay();
 
-        driveTrain.registerPages(display);
-//        intake.registerPages(display);
-//        shooter.registerPages(display);
-//        flower.registerPages(display);
+    }
+
+    public void configureRobot(){
+        display.addPage("AUTO","Main", 0, this::AutoConfigTelemetry);
+
+        autonomous_step_name = "INITIALIZED";
     }
 
     public void delay(double milliseconds){
@@ -90,28 +84,6 @@ public class AutoBaseClass extends LinearOpMode {
         }
     }
 
-    // Assumes caller has set speed to match shooting position already.
-    protected void autoShoot(){
-        ;
-//        double giveUpTime = 0;
-//
-//        giveUpTime = System.currentTimeMillis()+1000;
-//        while(!shooter.atShootingSpeed() && System.currentTimeMillis() < giveUpTime ){
-//            autoLoop();
-//        }
-//
-//        giveUpTime = System.currentTimeMillis()+1000;
-//        storage.ejectorLaunch();
-//        while(storage.getEjector() != EjectorPosition.UP && System.currentTimeMillis() < giveUpTime){
-//            autoLoop();
-//        }
-//
-//        giveUpTime = System.currentTimeMillis()+1000;
-//        storage.ejectorStow();
-//        while(storage.getEjector() != EjectorPosition.DOWN && System.currentTimeMillis() < giveUpTime){
-//            autoLoop();
-//        }
-    }
     
     @Override
     public void runOpMode() {
@@ -119,18 +91,15 @@ public class AutoBaseClass extends LinearOpMode {
     
     public void autoLoop(){
         camera.doLoop();
-        driveTrain.loop();
-//        intake.loop();
-//        shooter.loop();
-//        storage.loop();
-//        storage.telemetry(3);
+        updateTelemetry();
+    }
 
+    public void updateTelemetry(){
         display.print(telemetry);
         telemetry.update();
     }
 
-    public void saveLastAutoPosition(){
-        Pose2D currentPose = driveTrain.getCurrentPosition();
+    public void saveLastAutoPosition(Pose2D currentPose){
         blackboard.put("auto_x", currentPose.getX(DistanceUnit.INCH));
         blackboard.put("auto_y", currentPose.getY(DistanceUnit.INCH));
         blackboard.put("auto_hdg", currentPose.getHeading(AngleUnit.DEGREES));
@@ -171,28 +140,39 @@ public class AutoBaseClass extends LinearOpMode {
             alliance = Alliance.RED;
             blackboard.put("Alliance", alliance.toString());
         }
-     
-        if (isBlueAlliance()) {
-            // setGreenLED();
-            telemetry.addData("ALLIANCE", "Alliance: BLUE");
-        }
-        else if (isRedAlliance()) {
-            // setRedLED();
-            telemetry.addData("ALLIANCE", "Alliance: RED");
-        }
-        else {
-            telemetry.addData("ALLIANCE", "Alliance: Undefined");
-        }
-
-//        storage.telemetry(3);
-
-        telemetry.update();
     }
-    
+
+    double delayedStart = 0.0;
+    int up_deadband = 0;
+    int down_deadband = 0;
+    public void setupDelayedStart(){
+        if(gamepad1.dpad_up || gamepad2.dpad_up){
+            up_deadband += 1;
+        } else {
+            if (up_deadband > 0)
+                delayedStart += 1.0;
+            up_deadband = 0;
+        }
+        if(gamepad1.dpad_down || gamepad2.dpad_down)
+        {
+            down_deadband += 1;
+        } else {
+            if (down_deadband > 0)
+                delayedStart -= 1.0;
+            down_deadband = 0;
+        }
+        delayedStart = Math.max(delayedStart,0);
+        delayedStart = Math.min(delayedStart,30);
+    }
     public void gyroStart() {
         // Start the logging of measured acceleration
         //imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
     }
 
-  
+    public void AutoConfigTelemetry(Telemetry telemetry, int page){
+        telemetry.addData("AUTO STAGE", autonomous_step_name);
+        telemetry.addData("ALLIANCE", alliance.toString());
+        telemetry.addData("Start DELAY", delayedStart);
+        telemetry.addData("Start POS", fieldPosition.toString());
+    }
 }

@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 @Autonomous(name = "Hive Drive Right", group = "5384")
 
-public class AutoLaunchZone5384_Right extends AutoBaseClass {
+public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
 
     // Starts with robot facing the wall in the Launch Zone
     private int Max_RUNTIME = 30;
@@ -43,44 +43,19 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass {
         int down_deadband = 0;
 
         initializeRobot();
-        
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-        // Wait for the game to start (driver presses PLAY)
-        // driveTrain.setRunToPosition();
-//        storage.ejectorStow();
-        
+        configureRobot();
+        fieldPosition = StartPosition.LEFT;
+
         while (!isStarted()) {
 
-            if(gamepad1.dpad_up || gamepad2.dpad_up){
-                up_deadband += 1;
-            } else {
-                if (up_deadband > 0)
-                    delayedStart += 1.0;
-                up_deadband = 0;
-            }
-            if(gamepad1.dpad_down || gamepad2.dpad_down)
-            {
-                down_deadband += 1;
-            } else {
-                if (down_deadband > 0)
-                    delayedStart -= 1.0;
-                down_deadband = 0;
-            }
-            delayedStart = Math.max(delayedStart,0);
-            delayedStart = Math.min(delayedStart,30);
-            telemetry.addData("DELAY", delayedStart);
-
+            setupDelayedStart();
             setupAllianceAndPosition();
+            updateTelemetry();
             idle();
         }
-        opModeIsActive();
-
+        if(!opModeIsActive()) return;
+        autonomous_step_name = "RUNNING";
         delay(delayedStart * 1000);
-  /*      driveTrain.driveDistance(12.0,1,3);
-        driveTrain.slideDistance(12.0, 1, 3 );
-        shooter.setPowerMid();
-  */
 
         // step 1: Move and shoot the preloaded pollen
         // 1.1 : move forward 0.5ft

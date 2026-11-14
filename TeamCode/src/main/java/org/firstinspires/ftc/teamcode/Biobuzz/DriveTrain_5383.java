@@ -14,18 +14,22 @@ public class DriveTrain_5383 extends DriveTrain {
     }
 
     protected void configureMotors(){
+
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backRight.setDirection(DcMotor.Direction.REVERSE);
+
+        //        backRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+
+        //        frontLeft.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
