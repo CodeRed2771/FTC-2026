@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,10 +20,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 public class DriveTrain {
     private int[] fullPowerCallCounts = {0,0,0};
     private Boolean slowToggle = false;
-    protected DcMotor frontRight = null;     //frontleft
-    protected DcMotor frontLeft = null;   //frontRight
-    protected DcMotor backRight = null;   //backright
-    protected DcMotor backLeft = null;    //backleft
+    protected DcMotorEx frontRight = null;     //frontleft
+    protected DcMotorEx frontLeft = null;   //frontRight
+    protected DcMotorEx backRight = null;   //backright
+    protected DcMotorEx backLeft = null;    //backleft
+    protected DcMotorEx[] _motors = new DcMotorEx[4];
+
+    double _vel_gain = 1.0;
+    double _pos_gain = 1.0;
+    double MAX_MOTOR_TICKS_PER_SEC = 1000.0;
 
     GoBildaPinpointDriver pinpoint;
 
@@ -75,12 +82,18 @@ public class DriveTrain {
     IMU imu;
 
     public DriveTrain (HardwareMap hardwareMap) {
-        frontRight = hardwareMap.dcMotor.get("frontRight");
-        frontLeft = hardwareMap.dcMotor.get("frontLeft");
-        backRight = hardwareMap.dcMotor.get("backRight");
-        backLeft = hardwareMap.dcMotor.get("backLeft");
+        frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
+        frontLeft = hardwareMap.get(DcMotorEx.class, "frontLeft");
+        backRight = hardwareMap.get(DcMotorEx.class, "backRight");
+        backLeft = hardwareMap.get(DcMotorEx.class, "backLeft");
+
+        _motors[0] = frontRight;
+        _motors[1] = frontLeft;
+        _motors[2] = backRight;
+        _motors[3] = backLeft;
 
         configureMotors();
+        setAutoTunePIDF(1.0, 1.0);
 
         IMU.Parameters parameters = new IMU.Parameters(
             new RevHubOrientationOnRobot(
@@ -600,6 +613,70 @@ public class DriveTrain {
     public int calculateTurnTicks(double degrees) {
         return (int) (degrees * turnTicksPerDegree);
     }
-    
+
+
+    public void setAutoTunePIDF (double vel_gain, double pos_gain) {
+        _vel_gain = vel_gain;
+        _pos_gain = pos_gain;
+
+        double K_ff = 32767.0 / MAX_MOTOR_TICKS_PER_SEC * _vel_gain;
+        PIDFCoefficients coefficients = new PIDFCoefficients();
+        coefficients.p = 0.1 * K_ff;
+        coefficients.i = 0.1 * coefficients.p;
+        coefficients.d = 0.0;
+        coefficients.f = K_ff;
+
+        setVelocityPIDF(coefficients);
+        setPositionPIDF(5.0 * _pos_gain);
+    }
+
+    public void defaultPIDF () {
+        defaultVelocityPIDF();
+    }
+    public void defaultVelocityPIDF(){
+        PIDFCoefficients coefficients = new PIDFCoefficients();
+
+        // These constants were observed from sampling from the HD Hex motor 11/5/2026
+        coefficients.p = 10.0;
+        coefficients.i = 3.0;
+        coefficients.d = 0.0;
+        coefficients.f = 0.0;
+        setVelocityPIDF(coefficients);
+
+    }
+
+    public void defaultPositionPIDF(){
+        PIDFCoefficients coefficients = new PIDFCoefficients();
+        // These constants were observed from sampling from the HD Hex motor 11/5/2026
+        coefficients.p = 10.0;
+        coefficients.i = 0.05;
+        coefficients.d = 0.0;
+        coefficients.f = 0.0;
+        setPositionPIDF(coefficients);
+    }
+
+    public void setVelocityPIDF (PIDFCoefficients coeffs) {
+        for (DcMotorEx motor : _motors) {
+            motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coeffs);
+        }
+    }
+
+    public PIDFCoefficients getVelocityPIDF () {
+        return _motors[0].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void setPositionPIDF (PIDFCoefficients coeffs) {
+        for (DcMotorEx motor : _motors) {
+            motor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, coeffs);
+        }
+    }
+    public PIDFCoefficients getPositionPIDF () {
+        return _motors[0].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    public void setPositionPIDF (double gain) {
+        for (DcMotorEx motor : _motors) {
+            motor.setPositionPIDFCoefficients(gain);
+        }
+    }
 
 }
