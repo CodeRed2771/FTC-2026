@@ -51,6 +51,8 @@ public class AutoBaseClass_5383 extends AutoBaseClass {
 
     @Override
     public void configureRobot(){
+        super.configureRobot();
+
         driveTrain.registerPages(display);
         intake.registerPages(display);
         shooter.registerPages(display);

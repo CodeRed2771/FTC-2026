@@ -69,7 +69,8 @@ public class AutoBaseClass extends LinearOpMode {
 
     public void configureRobot(){
         display.addPage("AUTO","Main", 0, this::AutoConfigTelemetry);
-
+        alliance = Alliance.AMBER;
+        fieldPosition = StartPosition.LEFT;
         autonomous_step_name = "INITIALIZED";
     }
 
