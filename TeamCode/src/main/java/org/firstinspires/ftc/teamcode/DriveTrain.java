@@ -552,7 +552,7 @@ public class DriveTrain {
         diff = Math.abs(frontLeft.getCurrentPosition() - frontLeft.getTargetPosition());
         //telemetry.addData("completed diff", diff);
         //telemetry.update();
-        return diff < 20;
+        return diff < 15;
         //return !(frontLeft.isBusy() || frontRight.isBusy());
     }
        

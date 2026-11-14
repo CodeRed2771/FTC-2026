@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.PageDisplay;
 public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 
     public enum Presets {
-        FORWARD(0.6),
+        FORWARD(0.7),
         STOP(0.0),
         REVERSE(-0.5),
         CUSTOM(0.0);

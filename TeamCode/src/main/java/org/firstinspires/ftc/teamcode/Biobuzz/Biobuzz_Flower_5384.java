@@ -21,7 +21,7 @@ public class Biobuzz_Flower_5384 extends DCMotor_Mechanism {
     public enum Presets {
         DEPLOY_LIMIT(-5),
         DEPLOY(0),
-        STOW(105),
+        STOW(120),
         STOW_LIMIT(122);
 
         private final double val;

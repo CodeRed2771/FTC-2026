@@ -62,9 +62,9 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         if((_preset_mode == Presets.UP) && isRampUp()){
             setCurrentPosition(Presets.UP.value());
         }
-        if((_preset_mode == Presets.UP) && isBound()){
-            setCurrentPosition(Presets.UP.value());
-        }
+//        if((_preset_mode == Presets.UP) && isBound()){
+//            setCurrentPosition(Presets.UP.value());
+//        }
 
         if((_preset_mode == Presets.DOWN) && isBound())
             setCurrentPosition(Presets.DOWN.value());

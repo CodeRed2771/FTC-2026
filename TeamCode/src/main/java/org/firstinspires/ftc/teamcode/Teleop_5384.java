@@ -92,6 +92,8 @@ public class Teleop_5384 extends OpMode {
         telemetry.update();
 
         display.gotoPage("Shooter", "State Info");
+
+        driveTrain.setFieldCentricState(false);
     }
 
     protected void restoreAutoState(){
@@ -191,10 +193,10 @@ public class Teleop_5384 extends OpMode {
     private void doDrive(){
         driveTrain.speedAdjust(gamepad1.startWasPressed());
 
-        if (gamepad1.rightBumperWasPressed())
+        if (false && gamepad1.rightBumperWasPressed())
             driveTrain.resetFCAngle();
 
-        if (gamepad1.leftBumperWasPressed())
+        if (false && gamepad1.leftBumperWasPressed())
             driveTrain.toggleFieldCentricState();
 
         double slide = -gamepad1.left_stick_x;
@@ -229,17 +231,17 @@ public class Teleop_5384 extends OpMode {
     }
 
     private void doIntake() {
-        if (gamepad1.a || gamepad2.dpad_up) {
+        if (gamepad2.dpad_up) {
             intake.startIntake();
         }
-        else if (gamepad1.x  || gamepad2.dpad_left)  {
+        else if (gamepad2.dpad_left)  {
             intake.stop();
         }
-        else if (gamepad1.y || gamepad2.dpad_down){
+        else if (gamepad2.dpad_down){
             intake.eject();
         }
 
-        if (true && (gamepad1.bWasPressed() || gamepad2.bWasPressed())){
+        if (gamepad2.bWasPressed()){
             if (flower.getMode() == Biobuzz_Flower_5384.Presets.DEPLOY)
                 flower.stow();
             else

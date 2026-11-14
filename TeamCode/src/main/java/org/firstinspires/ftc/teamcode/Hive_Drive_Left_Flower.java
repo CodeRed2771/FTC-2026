@@ -56,67 +56,40 @@ public class Hive_Drive_Left_Flower extends AutoBaseClass_5384 {
         delay(delayedStart * 1000);
 
         // #1.  Drive forward to get Leave points
-        driveTrain.driveDistance(10.0, .4, 3);
+        driveTrain.driveDistance(12.0, .5, 2);
 
         // #2.0  Look for the Hive to be tipped how we want.
         // Wait up to X seconds leaving enough time for parking
 
-        while (camera.getObeliskID()==0 && opModeIsActive() && System.currentTimeMillis() < startTime) {
-            autoLoop();
-
-            idle();
-
-            if (System.currentTimeMillis() - startTime > (MAX_RUNTIME - TIME_TO_PARK) * 1000) {
-                driveTrain.slideDistance(-4.5*12, 0.8, 10);
-                driveTrain.slideDistance(1, 0.8, 10);
-
-                driveTrain.driveDistance(-4, 0.4, 10);
-            }
-        }
-
-//        shooter.setPowerHive();
-        delay(1500);
-
-        driveTrain.slideDistance(15, 0.4, 10);
-        driveTrain.driveDistance(8, 0.4, 10);
-        driveTrain.turn(180,0.4,10);
-        driveTrain.driveDistance(13,0.4, 10);
-        delay(2000);
-        driveTrain.driveDistance(-5,0.4, 10);
-        driveTrain.turn(180,0.4,10);
-        driveTrain.slideDistance(-15, 0.4, 10);
-        delay(1500);
-
-        driveTrain.slideDistance(4.5*12, 0.8, 10);
-        driveTrain.slideDistance(-1, 0.8, 10);
-
-        driveTrain.driveDistance(4, 0.4, 10);
-
         // #2 Shoot the pollen
         // 2.1 Start spinning the motors on the shooter
-        //shooter.setPowerMid();
+        shooter.setPowerHive();
+        intake.fireAll();
+        delay(3500);
+        shooter.stop();
+        intake.stop();
 
         // 2.2 get a pollen from storage ready to go
-        // storage.select();
+        flower.deploy();
 
-        // 2.3 set the speed based on distance - May only need 1 or 2 speeds to select
-//        shooter.setPowerMid();
-
-        // 2.4 wait until the motors are ready.
-        //   - wait fixed amount of time
-        //   - wait until it stops accelerating < +/- X of 0 accel
-        //   - wait until motor is at speed target < +/- Y of target
-        // DRY: Don't Repeat Yourself
-//        delay(1000);
-
-        // 2.5 transfer from storage to the shooter.
-//        storage.ejectorLaunch();
-        // Decide if we wait until motors get back up to speed or just shoot all elements
-
+        // 2.3 get pollen from flower
+        driveTrain.driveDistance(8, 0.6, 2);
+        driveTrain.slideDistance(15, 0.6, 3);
+        driveTrain.turn(180,0.6,3);
+        intake.startIntake();
+        driveTrain.driveDistance(13,0.6, 3);
+        delay(1000);
+        intake.stop();
+        driveTrain.driveDistance(-5,0.6, 2);
+        driveTrain.turn(180,0.6,3);
+        driveTrain.slideDistance(15, 0.6, 2);
 
         // #3 Park in the parking zone
         // #3.1 Move right 5 ft
-//        driveTrain.slideDistance(5*12.0, 1.0,10.0);
-        
+        driveTrain.slideDistance(4.5*12, 0.8, 3);
+        driveTrain.slideDistance(-6, 0.8, 1);
+
+        driveTrain.driveDistance(4, 0.4, 2);
+
     }
 }

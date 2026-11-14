@@ -54,19 +54,21 @@ public class Auto_Just_Drive_Left_5384 extends AutoBaseClass_5384 {
         delay(delayedStart * 1000);
 
         // #1.  Drive forward to get Leave points
-        driveTrain.driveDistance(12.0, .8, 3);
+        driveTrain.driveDistance(14.0, .6, 3);
         if(!opModeIsActive()) return;
 
         // #2.0  Look for the Hive to be tipped how we want.
         // Wait up to X seconds leaving enough time for parking
         delay(500);
 
-        driveTrain.slideDistance(5*12, 0.8, 3);
+        driveTrain.slideDistance(5.0*12, 0.8, 2);
+        delay(500);
+        driveTrain.slideDistance(0.5*12, 0.4, 1);
         if(!opModeIsActive()) return;
-        driveTrain.slideDistance(-3, 0.8, 1);
+        driveTrain.slideDistance(-8, 0.6, 1);
         if(!opModeIsActive()) return;
 
-        driveTrain.driveDistance(9, 0.8, 2);
+        driveTrain.driveDistance(12, 0.6, 2);
         if(!opModeIsActive()) return;
 
     }
