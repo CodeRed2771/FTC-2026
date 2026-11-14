@@ -155,7 +155,7 @@ public class DCMotor_Mechanism {
     }
 
     public boolean isBound(){
-        return ((System.currentTimeMillis() - start_of_bind) < bind_duration_ms) && prev_bind_state;
+        return (prev_bind_state && ((System.currentTimeMillis() - start_of_bind) > bind_duration_ms));
     }
 
     public double getPeakCurrent(){

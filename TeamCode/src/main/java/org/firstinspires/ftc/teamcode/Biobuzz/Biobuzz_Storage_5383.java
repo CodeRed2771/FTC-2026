@@ -29,7 +29,7 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
 
     private final double INITIAL_POSITION = 33.0;
     private Presets _preset_mode = Presets.CUSTOM;
-    private final double DEPLOY_POWER = 0.5;
+    private final double DEPLOY_POWER = 0.8;
     NormalizedColorSensor colorSensor;
     private double color_gain = 6.2;
     private final float RAMP_COLOR_THRESHOLD = 0.297f;
@@ -60,6 +60,9 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         super.loop();
 
         if((_preset_mode == Presets.UP) && isRampUp()){
+            setCurrentPosition(Presets.UP.value());
+        }
+        if((_preset_mode == Presets.UP) && isBound()){
             setCurrentPosition(Presets.UP.value());
         }
 
