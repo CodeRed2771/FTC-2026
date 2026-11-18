@@ -31,7 +31,7 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 
     private Presets _intake_mode = Presets.CUSTOM;
     private double last_cmd;
-    CRServo _loader_motor;
+    CRServo _feeder_servo;
     private final double CR_MOTOR_CMD_LIMIT = 0.92;
     private double max_loader_command = CR_MOTOR_CMD_LIMIT;
 
@@ -50,8 +50,8 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
               hardwareMap);
         setAutoTunePIDF(1.0,2.0);
 
-        _loader_motor = hardwareMap.get(CRServo.class, "loader");
-        _loader_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        _feeder_servo = hardwareMap.get(CRServo.class, "loader");
+        _feeder_servo.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
 
@@ -84,7 +84,7 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
 //        else
 //            _loader_motor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        _loader_motor.setPower(cmd);
+        _feeder_servo.setPower(cmd);
     }
 
     public void set (Presets new_mode) {
@@ -145,8 +145,8 @@ public class Biobuzz_Intake_5384 extends DCMotor_Mechanism {
                 telemetry.addData("State", _intake_mode.toString());
                 telemetry.addData("Intake Command", last_cmd);
                 telemetry.addData("Loader Command", last_cmd);
-                telemetry.addData("Loader Power", _loader_motor.getPower());
-                telemetry.addData("Loader Direction", _loader_motor.getDirection());
+                telemetry.addData("Loader Power", _feeder_servo.getPower());
+                telemetry.addData("Loader Direction", _feeder_servo.getDirection());
                 break;
         }
     }

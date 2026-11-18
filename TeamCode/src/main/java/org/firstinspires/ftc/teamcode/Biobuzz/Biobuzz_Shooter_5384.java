@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Biobuzz;
 
+import androidx.core.math.MathUtils;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -13,7 +15,7 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
         REVERSE_SLOW(-50.0),
         STOP(0.0),
         EJECT(-0.75),
-        SHOOT(2.6),
+        SHOOT(2.55),
         CUSTOM(0.0);
 
         private final double val;
@@ -78,8 +80,22 @@ public class Biobuzz_Shooter_5384 extends DCMotor_Mechanism {
         set(Presets.STOP);
     }
 
+    public double adjustment = 0.0;
+
+    public double getAdjustment () {
+        return adjustment;
+    }
+
+    public void setAdjustment (double adjustment) {
+        this.adjustment = MathUtils.clamp(adjustment,-2.0,2.0);
+        set(_shooter_mode);
+    }
+
     public void set (Presets new_mode) {
-        set(new_mode.value());
+        if(new_mode == Presets.SHOOT)
+            set(new_mode.value()+ adjustment);
+        else
+            set(new_mode.value());
         _shooter_mode = new_mode;
     }
 

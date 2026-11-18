@@ -74,7 +74,7 @@ public class Teleop_5383 extends OpMode {
         telemetry.update();
 
         display.gotoPage("Storage", "Main");
-
+        driveTrain.setFieldCentricState(false);
     }
 
     protected void restoreAutoState(){

@@ -91,7 +91,7 @@ public class AutoBaseClass extends LinearOpMode {
     }
     
     public void autoLoop(){
-        camera.doLoop();
+        //camera.doLoop();
         updateTelemetry();
     }
 

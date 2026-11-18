@@ -14,7 +14,7 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
 
     public enum Presets {
         DOWN(0.0),
-        UP(28),
+        UP(33),
         CUSTOM(0.0);
 
         private final double val;
@@ -27,7 +27,7 @@ public class Biobuzz_Storage_5383 extends DCMotor_Mechanism {
         }
     }
 
-    private final double INITIAL_POSITION = 33.0;
+    private final double INITIAL_POSITION = 35.0;
     private Presets _preset_mode = Presets.CUSTOM;
     private final double DEPLOY_POWER = 0.8;
     NormalizedColorSensor colorSensor;

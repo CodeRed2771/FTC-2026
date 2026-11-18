@@ -21,7 +21,6 @@ package org.firstinspires.ftc.teamcode;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5384;
-import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
 
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
@@ -39,7 +38,6 @@ public class AutoBaseClass_5384 extends AutoBaseClass {
     protected Biobuzz_Intake_5384 intake;
     protected Biobuzz_Shooter_5384 shooter;
     protected Biobuzz_Flower_5384 flower;
-    protected DecodeCamera camera;
 
     public void initializeRobot() {
         super.initializeRobot();

@@ -14,12 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Flower_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Intake_5384;
 import org.firstinspires.ftc.teamcode.Biobuzz.Biobuzz_Shooter_5384;
-import org.firstinspires.ftc.teamcode.Decode.Artifact;
 import org.firstinspires.ftc.teamcode.Decode.DecodeCamera;
-
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Lift_5384_2025;
 import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025;
-import org.firstinspires.ftc.teamcode.Decode.Emergency.Storage_5384_2025.WiperPosition;
 
 @TeleOp(name = "2026:5384:Emergency Drive", group = "Iterative Opmode")
 public class Teleop_5384 extends OpMode {
@@ -155,15 +152,6 @@ public class Teleop_5384 extends OpMode {
         telemetry.update();
     }
     
-    private void doLift() {
-        if (lift == null) {
-            return;
-        }
-        if (gamepad1.right_trigger > 0.5 && gamepad1.left_trigger > 0.5) {
-            
-        }    
-    }
-    
     private void doCamera() {
         red_goal_found = camera.redGoalFound();
         blue_goal_found = camera.blueGoalFound();
@@ -208,6 +196,11 @@ public class Teleop_5384 extends OpMode {
     private boolean wasShooting = false;
     private void doShooter() {
 
+        if(gamepad2.leftBumperWasPressed())
+            shooter.setAdjustment(shooter.getAdjustment() - 0.05);
+        if(gamepad2.rightBumperWasPressed())
+            shooter.setAdjustment(shooter.getAdjustment() + 0.05);
+
         if (gamepad2.aWasPressed()) {
             autoaim = false;
             shooter.setPowerHive();
@@ -248,41 +241,5 @@ public class Teleop_5384 extends OpMode {
                 flower.deploy();
         }
     }
-    
-    static boolean pressed = false;
-    private void doStorage() {
-        if(gamepad2.right_bumper)
-            storage.ejectorStow();
-
-            
-        if(gamepad2.start)
-            storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.RIGHT);
-        else if(gamepad2.y && !pressed) // top
-        {
-            pressed = true;
-            storage.captureArtifact();
-        }
-        else if(gamepad2.a && !pressed)
-        {
-            pressed = true;
-            storage.select(Artifact.UNKNOWN);
-        }
-        else if(gamepad2.b && !pressed)
-        {
-            pressed = true;
-            storage.ejectorStow();
-            storage.setWiperPosition(WiperPosition.RIGHT, WiperPosition.RIGHT);
-        }
-        else if(gamepad2.x && !pressed)
-        {
-            pressed = true;
-            storage.ejectorStow();
-            storage.setWiperPosition(WiperPosition.LEFT, WiperPosition.LEFT);
-        }
-        else{
-            pressed = false;
-        }
-
-   }
     
 }
