@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 @Autonomous(name = "2026:5384:Just Drive Right", group = "5384")
 
-public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
+public class Auto_Just_Drive_Right_5384 extends AutoBaseClass_5384 {
 
     // Starts with robot facing the wall in the Launch Zone
     private int Max_RUNTIME = 30;
@@ -59,11 +59,10 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
 
         // step 1: Move and shoot the preloaded pollen
         // 1.1 : move forward 0.5ft
-        driveTrain.driveDistance(15.0, 0.6, 1);
+        driveTrain.driveDistance(12.0, 0.6, 1);
+        delay(250);
 
         // 1.2 : ready the shooter (spin it up)
-        //shooter.setPowerMid();
-
 
         // 1.4 : adjust aiming (use april tag)
 
@@ -73,13 +72,25 @@ public class AutoLaunchZone5384_Right extends AutoBaseClass_5384 {
 
 
         // step 2: Slide over to the runway
-        driveTrain.slideDistance(-32,0.8,2);
+        driveTrain.slideDistance(-32,0.6,2);
+        delay(250);
+        driveTrain.turn(45,0.3,2);
+        shooter.setPowerHive();
+        intake.fireAll();
+        delay(4000);
+        //shooter.setPowerMid();
 
-        driveTrain.driveDistance(8*12,0.8,4);
+        driveTrain.turn(-45,0.3,2);
+        shooter.stop();
+
+
+        driveTrain.driveDistance(8*12,0.6,4);
+        intake.stop();
+
         // step 3: Ride the wall into the parking zone
-        driveTrain.slideDistance(-12, 0.8, 2);
+        driveTrain.slideDistance(-12, 0.6, 2);
         driveTrain.slideDistance(-12, 0.3, 2);
-        driveTrain.slideDistance(5, 0.8, 1);
+        driveTrain.slideDistance(8, 0.8, 1);
         driveTrain.driveDistance(12, 0.8, 2);
     }
 }
